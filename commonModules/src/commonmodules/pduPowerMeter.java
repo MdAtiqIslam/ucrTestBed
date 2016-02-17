@@ -18,7 +18,7 @@ public class pduPowerMeter {
 
     private String user = "readonly";
     private String password = "testbed";
-    private String host = "169.235.14.96";
+    private String host = "169.235.14.147";
     private String command = "";
     private int noOfPorts;
     private int ports[];
@@ -53,7 +53,7 @@ public class pduPowerMeter {
         }
         String logCommand = "olReading " + portString + " power \n";
         //String logCommand = "olReading all power \n";
-        //String dateCommand = "date \n";
+        String dateCommand = "date \n";
 
         for (int i = 0; i < this.loggingDuration * this.samplingFreq * 10; i++) {
             //this.command += (dateCommand+logCommand);
@@ -67,8 +67,9 @@ public class pduPowerMeter {
         Session session = sshPDU.startSession();
         serverFeedback = sshPDU.sendCommandPDU(session, command, samplingFreq, loggingDuration);
         sshPDU.stopSession();
-        //System.out.println(serverFeedback);
+        System.out.println(serverFeedback);
         extractReading();
+        int i=0;
     }
 
     private void extractReading() {
@@ -103,7 +104,7 @@ public class pduPowerMeter {
                 meterReadings[readingIndex].timeStamp=line;
             }
 
-            if (isNumeric(lineBreaks[0])) {
+            if (isNumeric(lineBreaks[0]) && lineBreaks.length==3) {
                 int port = Integer.parseInt(lineBreaks[0]);
                 String lineBreaks2[] = lineBreaks[2].split("\\s+");
                 int reading = Integer.parseInt(lineBreaks2[1]);
@@ -117,7 +118,7 @@ public class pduPowerMeter {
     }
 
     public static boolean isNumeric(String str) {
-        return str.matches("-?\\d+(\\.\\d+)?");  //match a number with optional '-' and decimal.
+        return str.matches("\\s?\\d+(\\.\\d+)?");  //match a number with optional '-' and decimal.
     }
 
 }
