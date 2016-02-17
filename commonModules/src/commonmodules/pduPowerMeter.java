@@ -7,7 +7,9 @@ package commonmodules;
 
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 
 /**
@@ -29,6 +31,7 @@ public class pduPowerMeter {
     private final double samplingFreq = 1; //sample per seconds
     private final double loggingDuration;
     private pduMeterReading[] meterReadings;
+    private int logId;
 
     public pduPowerMeter(int[] ports, int loggingDuration) {
         this.loggingDuration = loggingDuration;
@@ -61,15 +64,20 @@ public class pduPowerMeter {
             this.command += logCommand;
         }
     }
+    
+    public void setLogId(int logId){
+        this.logId=logId;
+    }
 
     public void startLogging() throws JSchException, InterruptedException, IOException {
         sshModule sshPDU = new sshModule(host, user, password);
         Session session = sshPDU.startSession();
         serverFeedback = sshPDU.sendCommandPDU(session, command, samplingFreq, loggingDuration);
         sshPDU.stopSession();
-        System.out.println(serverFeedback);
+        //System.out.println(serverFeedback);
         extractReading();
-        int i=0;
+        logToFile();
+        responseSummarizer();
     }
 
     private void extractReading() {
@@ -119,6 +127,48 @@ public class pduPowerMeter {
 
     public static boolean isNumeric(String str) {
         return str.matches("\\s?\\d+(\\.\\d+)?");  //match a number with optional '-' and decimal.
+    }
+    
+    public void responseSummarizer(){
+        double[] average = new double[noOfPorts];
+        double[] max = new double[noOfPorts];
+        for (int i=0; i<noOfPorts;i++){
+            average[i]=0; max[i]=0;
+        }
+        
+        for (int i=0;i<noOfPorts;i++){
+            for(int j=0; j<noOfReadings;j++){
+                double currentReading = meterReadings[j].readings[i];
+                average[i] += currentReading;
+                if (currentReading>max[i]) max[i]=currentReading;
+            }
+            average[i] = average[i]/noOfReadings;
+        }
+        for (int i=0;i<noOfPorts;i++){
+            System.out.print("Port "+ports[i]+"- Avg:"+average[i] + ", Max:"+max[i]+"\n");
+        }
+        
+        
+    }
+    
+    public void logToFile() throws IOException{
+        FileWriter writer = new FileWriter("C:\\local_files\\testBed\\outputs\\websearch\\powermeter\\"+logId+"_"+System.currentTimeMillis()+".csv");
+        for (int i=0; i<noOfPorts;i++){
+            writer.append(String.valueOf("Port:"+ports[i]));
+            writer.append(',');
+        }
+        writer.append('\n');
+        for (int i = 0; i < noOfReadings; i++) {
+            for (int j=0; j<noOfPorts;j++){
+                writer.append(String.valueOf(meterReadings[i].readings[j]));
+                writer.append(',');
+            }
+            writer.append('\n');
+        }
+
+        writer.flush();
+        writer.close();
+        
     }
 
 }
