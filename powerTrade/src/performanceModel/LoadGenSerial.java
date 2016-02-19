@@ -73,7 +73,7 @@ public class LoadGenSerial implements Runnable{
     
     
     private static String[] getSearchIndex(){
-        String fileName = "C:\\local_files\\testBed\\data\\websearch\\search_terms.csv";
+        String fileName = "D:\\testbed\\data\\websearch\\search_terms.csv";
         int NoOfItem = 1609;
         String[] searchIndex = new String[NoOfItem];
         
@@ -133,7 +133,7 @@ public class LoadGenSerial implements Runnable{
     private void logToFile(long[][] ResponseLog, int noOfReq){
         try {
             //FileWriter writer = new FileWriter("C:\\Source Code\\atiq_codes\\LoadGenHttp\\results\\"+threadNum+"_"+System.currentTimeMillis()+".csv");
-            FileWriter writer = new FileWriter("C:\\local_files\\testBed\\outputs\\websearch\\nutch\\"+threadNum+".csv");
+            FileWriter writer = new FileWriter("D:\\testbed\\outputs\\websearch\\nutch\\"+threadNum+".csv");
 //            writer.append("Send Time");
 //            writer.append(',');
 //            writer.append("Response");
@@ -172,15 +172,17 @@ public class LoadGenSerial implements Runnable{
                 //URL searchTermUrl = new URL(searchTerm);
                 URL nutch = new URL(searchURL);
                 URLConnection yc = nutch.openConnection();
+                try{
                 BufferedReader in = new BufferedReader(
                         new InputStreamReader(
                                 yc.getInputStream()));
+                
                 String inputLine;
                 
                 while ((inputLine = in.readLine()) != null) {
                     //System.out.println(inputLine);
                 }
-                in.close();
+                in.close();}catch (java.net.ConnectException | java.net.SocketTimeoutException excep){continue;};
 //                long end =  System.nanoTime();//
                  long end =  System.currentTimeMillis();
                 //System.out.println("Round trip response time = " + (end - start) + " millis");

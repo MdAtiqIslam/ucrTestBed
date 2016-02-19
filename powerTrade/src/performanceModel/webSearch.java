@@ -24,15 +24,15 @@ import java.util.logging.Logger;
 public class webSearch {
 
     private static final String user = "root";
-    private static final String password = "srenserver";
+    private static final String password = "SCGServer@15";
 
-    private static final String[] hosts = {"169.235.14.140",//server8
-                                            "169.235.14.141"}; //server9
+    private static final String[] hosts = {"169.235.14.144",//server12
+                                            "169.235.14.146"}; //server14
 // TODO: Hostname of the remote machine (eg: inst.eecs.berkeley.edu)
 
-    private static final String[] nutchIP = {"169.235.14.60",
-                                                "169.235.14.61"};
-    private static final int noOfCore = 2; //for servers 6 to 10
+    private static final String[] nutchIP = {"192.168.137.7",
+                                                "192.168.137.219"};
+    private static final int noOfCore = 6; //for servers 6 to 10
     private static int slotDuration = 10;
 
     public static void main(String[] args) throws JSchException, InterruptedException {
@@ -54,7 +54,8 @@ public class webSearch {
         int[] ports = {17, 16};
         pduPowerMeter powerMeter = new pduPowerMeter(ports, slotDuration);
 
-        int[] allFreq = {1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600};
+        //int[] allFreq = {1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600};
+        int[] allFreq = {1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2001};
         for (int expNo = 0; expNo < allFreq.length; expNo++) {
             changeServerFreq(servers, allFreq[expNo]);
             checkServerFreq(servers);
@@ -72,7 +73,7 @@ public class webSearch {
 
         //int[] interArrivalTime = {0,100,200,300,400,500,600,700,800,900,1000,1100,1200,1300,1400,1500}; 
         int interArrivalTime = 200;
-        int[] NoOfThreadsArray = {5, 20, 30};//{5, 10, 15, 20, 25, 35, 40, 45, 50, 55, 60, 65, 70};//{5,10,15,20,25,35,40,45,50,55,60,65,70};//{10,20,30,40,50,60,70,80,90,100};
+        int[] NoOfThreadsArray = {5};//{5, 10, 15, 20, 25, 35, 40, 45, 50, 55, 60, 65, 70};//{5,10,15,20,25,35,40,45,50,55,60,65,70};//{10,20,30,40,50,60,70,80,90,100};
         for (int nt = 0; nt < NoOfThreadsArray.length; nt++) {
             int NoOfThreads = NoOfThreadsArray[nt];
 
@@ -94,7 +95,7 @@ public class webSearch {
 
         List<Double> allData = new ArrayList<>();
         for (int i = startNumber; i < startNumber + NoOfFiles; i++) {
-            String csvFile = "C:\\local_files\\testBed\\outputs\\websearch\\nutch\\" + i + ".csv";
+            String csvFile = "D:\\testbed\\outputs\\websearch\\nutch\\" + i + ".csv";
             BufferedReader br = null;
             String line = "";
             String cvsSplitBy = ",";
