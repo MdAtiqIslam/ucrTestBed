@@ -58,7 +58,7 @@ public class pduPowerMeter {
         //String logCommand = "olReading all power \n";
         String dateCommand = "date \n";
 
-        for (int i = 0; i < this.loggingDuration * this.samplingFreq * 10; i++) {
+        for (int i = 0; i < this.loggingDuration * this.samplingFreq * 8; i++) {
             //this.command += (dateCommand+logCommand);
             //without the date commnad, the date command does not work with "readonly user"
             this.command += logCommand;
@@ -145,7 +145,7 @@ public class pduPowerMeter {
             average[i] = average[i]/noOfReadings;
         }
         for (int i=0;i<noOfPorts;i++){
-            System.out.print("Port "+ports[i]+"- Avg:"+average[i] + ", Max:"+max[i]+"\n");
+            System.out.print("Port "+ports[i]+"- Avg:"+average[i] + ", Max:"+max[i]+",");
         }
         
         
