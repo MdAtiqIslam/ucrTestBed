@@ -58,7 +58,7 @@ public class pduPowerMeter {
         //String logCommand = "olReading all power \n";
         String dateCommand = "date \n";
 
-        for (int i = 0; i < this.loggingDuration * this.samplingFreq * 8; i++) {
+        for (int i = 0; i < this.loggingDuration * this.samplingFreq *8; i++) {
             //this.command += (dateCommand+logCommand);
             //without the date commnad, the date command does not work with "readonly user"
             this.command += logCommand;
@@ -69,11 +69,20 @@ public class pduPowerMeter {
         this.logId=logId;
     }
 
+    public void resetReadings(){
+        for (int i=0; i<noOfReadings; i++){
+            for (int j=0; j<noOfPorts;j++){
+                meterReadings[i].readings[j]=0;
+            }
+        }
+    }
+    
     public void startLogging() throws JSchException, InterruptedException, IOException {
         sshModule sshPDU = new sshModule(host, user, password);
         Session session = sshPDU.startSession();
         serverFeedback = sshPDU.sendCommandPDU(session, command, samplingFreq, loggingDuration);
         sshPDU.stopSession();
+        resetReadings();
         //System.out.println(serverFeedback);
         extractReading();
         //logToFile();
@@ -137,12 +146,14 @@ public class pduPowerMeter {
         }
         
         for (int i=0;i<noOfPorts;i++){
+            int readingCount=0;
             for(int j=0; j<noOfReadings;j++){
                 double currentReading = meterReadings[j].readings[i];
-                average[i] += currentReading;
+                if (currentReading !=0) {average[i] += currentReading; readingCount++;}
                 if (currentReading>max[i]) max[i]=currentReading;
             }
-            average[i] = average[i]/noOfReadings;
+            if (readingCount>0) average[i] = average[i]/readingCount;
+            else average[i]=0;
         }
         for (int i=0;i<noOfPorts;i++){
             System.out.print("Port "+ports[i]+"- Avg:"+average[i] + ", Max:"+max[i]+",");
