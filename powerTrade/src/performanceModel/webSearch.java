@@ -33,9 +33,11 @@ public class webSearch {
     private static final String[] nutchIP = {"192.168.137.7",
                                                 "192.168.137.219"};
     private static final int noOfCore = 6; //for servers 6 to 10
-    private static int slotDuration = 10;
+    private static int slotDuration = 20;
+    public static long logFolder;
 
-    public static void main(String[] args) throws JSchException, InterruptedException {
+    public static void main(String[] args) throws JSchException, InterruptedException, IOException {
+        
         int noOfServer = 2;
         ServerXen[] servers = new ServerXen[noOfServer];
         for (int i = 0; i < servers.length; i++) {
@@ -51,15 +53,17 @@ public class webSearch {
 //            }
 //        }
 
-        int[] ports = {17, 16};
+        int[] ports = {12, 10};
         pduPowerMeter powerMeter = new pduPowerMeter(ports, slotDuration);
 
         //int[] allFreq = {1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600};
         int[] allFreq = {1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2001};
-        for (int expNo = 0; expNo < allFreq.length; expNo++) {
-            changeServerFreq(servers, allFreq[expNo]);
-            checkServerFreq(servers);
-            loadGenSerial(noOfServer, powerMeter);
+        for (int repeat = 0; repeat < 2; repeat++) {
+            for (int expNo = 0; expNo < allFreq.length; expNo++) {
+                changeServerFreq(servers, allFreq[expNo]);
+                checkServerFreq(servers);
+                loadGenSerial(noOfServer, powerMeter);
+            }
         }
 
         //disconnect servers
@@ -68,15 +72,29 @@ public class webSearch {
         }
 
     }
-
-    public static void loadGenSerial(int NoOfServers, pduPowerMeter powerMeter) throws InterruptedException {
+    
+    public static void  loadGenSerial(int NoOfServers, pduPowerMeter powerMeter) throws InterruptedException, JSchException, IOException {
 
         //int[] interArrivalTime = {0,100,200,300,400,500,600,700,800,900,1000,1100,1200,1300,1400,1500}; 
         int interArrivalTime = 200;
-        int[] NoOfThreadsArray = {5, 10, 15, 20, 25, 35, 40, 45, 50, 55, 60, 65, 70};//{5,10,15,20,25,35,40,45,50,55,60,65,70};//{10,20,30,40,50,60,70,80,90,100};
+        int[] NoOfThreadsArray = {10,20,30,40,50,60,70};//{5, 10, 15, 20, 25, 35, 40, 45, 50, 55, 60, 65, 70};//{5,10,15,20,25,35,40,45,50,55,60,65,70};//{10,20,30,40,50,60,70,80,90,100};
         for (int nt = 0; nt < NoOfThreadsArray.length; nt++) {
+            logFolder=System.currentTimeMillis();
+           
             int NoOfThreads = NoOfThreadsArray[nt];
-
+            
+            Thread meterRead = new Thread (new Runnable(){
+                @Override
+                public void run() {
+                    try {
+                        powerMeter.startLogging(); //To change body of generated methods, choose Tools | Templates.
+                    } catch (JSchException | InterruptedException | IOException ex) {
+                        Logger.getLogger(webSearch.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            });
+            meterRead.start();
+            
             for (int j = 0; j < NoOfServers; j++) {
                 List<LoadGenSerial> test = new ArrayList<>();
                 for (int i = 0; i < NoOfThreads; i++) {
@@ -95,7 +113,7 @@ public class webSearch {
 
         List<Double> allData = new ArrayList<>();
         for (int i = startNumber; i < startNumber + NoOfFiles; i++) {
-            String csvFile = "C:\\local_files\\files\\output\\websearch\\nutch\\" + i + ".csv";
+            String csvFile = "C:\\local_files\\files\\output\\websearch\\nutch\\" +webSearch.logFolder+"_"+ i + ".csv";
             BufferedReader br = null;
             String line = "";
             String cvsSplitBy = ",";

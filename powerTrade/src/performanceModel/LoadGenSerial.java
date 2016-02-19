@@ -133,7 +133,8 @@ public class LoadGenSerial implements Runnable{
     private void logToFile(long[][] ResponseLog, int noOfReq){
         try {
             //FileWriter writer = new FileWriter("C:\\Source Code\\atiq_codes\\LoadGenHttp\\results\\"+threadNum+"_"+System.currentTimeMillis()+".csv");
-            FileWriter writer = new FileWriter("C:\\local_files\\files\\output\\websearch\\nutch\\"+threadNum+".csv");
+            String fileLocation = "C:\\local_files\\files\\output\\websearch\\nutch\\"+webSearch.logFolder+"_"+threadNum+".csv";
+            FileWriter writer = new FileWriter(fileLocation);
 //            writer.append("Send Time");
 //            writer.append(',');
 //            writer.append("Response");
@@ -179,15 +180,16 @@ public class LoadGenSerial implements Runnable{
                 
                 String inputLine;
                 boolean stopSend = false;
-                while ((inputLine = in.readLine()) == null) {
+                while ((inputLine = in.readLine()) != null) {
                     //System.out.println(inputLine);
-                    if(System.currentTimeMillis()> ExpirationTime) stopSend = true; in.close(); break;
+                    if(System.currentTimeMillis()> ExpirationTime) {stopSend = true; in.close(); break;}
                 }
                if (stopSend) break;
                 
                 in.close();}catch (java.net.ConnectException | java.net.SocketTimeoutException excep){continue;};
 //                long end =  System.nanoTime();//
                  long end =  System.currentTimeMillis();
+                 if (end - start > 1000) continue;
                 //System.out.println("Round trip response time = " + (end - start) + " millis");
                 ResponseLog[index][0] = start;
 //                ResponseLog[index][1] = (long)((end - start)/(1000*1000));
