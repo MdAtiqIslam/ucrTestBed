@@ -160,6 +160,7 @@ public class LoadGenSerial implements Runnable{
     
 
     @Override
+    @SuppressWarnings("empty-statement")
     public void run() {
         //String[] searchedItem = new String[MaxNumberOfReq];
         int index = 0;
@@ -186,10 +187,11 @@ public class LoadGenSerial implements Runnable{
                 }
                if (stopSend) break;
                 
-                in.close();}catch (java.net.ConnectException | java.net.SocketTimeoutException excep){continue;};
+                in.close();
+                }catch (java.net.SocketException | java.net.SocketTimeoutException excep){System.out.println("HTTP connection error \n");};
 //                long end =  System.nanoTime();//
                  long end =  System.currentTimeMillis();
-                 if (end - start > 1000) continue;
+                 //if (end - start > 1000) continue;
                 //System.out.println("Round trip response time = " + (end - start) + " millis");
                 ResponseLog[index][0] = start;
 //                ResponseLog[index][1] = (long)((end - start)/(1000*1000));
