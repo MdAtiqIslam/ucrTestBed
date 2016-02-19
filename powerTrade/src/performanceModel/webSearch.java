@@ -73,7 +73,7 @@ public class webSearch {
 
         //int[] interArrivalTime = {0,100,200,300,400,500,600,700,800,900,1000,1100,1200,1300,1400,1500}; 
         int interArrivalTime = 200;
-        int[] NoOfThreadsArray = {20};//{5, 10, 15, 20, 25, 35, 40, 45, 50, 55, 60, 65, 70};//{5,10,15,20,25,35,40,45,50,55,60,65,70};//{10,20,30,40,50,60,70,80,90,100};
+        int[] NoOfThreadsArray = {5, 10, 15, 20, 25, 35, 40, 45, 50, 55, 60, 65, 70};//{5,10,15,20,25,35,40,45,50,55,60,65,70};//{10,20,30,40,50,60,70,80,90,100};
         for (int nt = 0; nt < NoOfThreadsArray.length; nt++) {
             int NoOfThreads = NoOfThreadsArray[nt];
 
