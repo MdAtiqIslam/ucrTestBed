@@ -20,7 +20,7 @@ public class pduPowerMeter {
 
     private String user = "readonly";
     private String password = "testbed";
-    private String host = "169.235.14.147";
+    private String host = "192.168.137.32";
     private String command = "";
     private int noOfPorts;
     private int ports[];
