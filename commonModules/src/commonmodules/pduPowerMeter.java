@@ -76,7 +76,7 @@ public class pduPowerMeter {
         sshPDU.stopSession();
         //System.out.println(serverFeedback);
         extractReading();
-        logToFile();
+        //logToFile();
         responseSummarizer();
     }
 
@@ -152,7 +152,7 @@ public class pduPowerMeter {
     }
     
     public void logToFile() throws IOException{
-        FileWriter writer = new FileWriter("C:\\local_files\\testBed\\outputs\\websearch\\powermeter\\"+logId+"_"+System.currentTimeMillis()+".csv");
+        FileWriter writer = new FileWriter("C:\\local_files\\files\\output\\websearch\\power\\"+logId+"_"+System.currentTimeMillis()+".csv");
         for (int i=0; i<noOfPorts;i++){
             writer.append(String.valueOf("Port:"+ports[i]));
             writer.append(',');
