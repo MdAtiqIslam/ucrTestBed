@@ -53,12 +53,13 @@ public class webSearch {
 //            }
 //        }
 
-        int[] ports = {12, 10};
+
+        int[] ports = {16};
         pduPowerMeter powerMeter = new pduPowerMeter(ports, slotDuration);
         powerMeter.startLogging();
 
-        //int[] allFreq = {1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600};
-        int[] allFreq = {1800,1900,2000,2001};//{1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2001};
+        int[] allFreq = {1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600};
+        //int[] allFreq = {1800,1900,2000,2001};//{1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2001};
         for (int repeat = 0; repeat < 2; repeat++) {
             for (int expNo = 0; expNo < allFreq.length; expNo++) {
                 changeServerFreq(servers, allFreq[expNo]);
