@@ -10,12 +10,12 @@ import com.jcraft.jsch.Session;
 import commonmodules.ServerXen;
 import commonmodules.pduPowerMeter;
 import commonmodules.sshModule;
+import commonmodules.currentTime;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import static performanceModel.webSearch.checkServerFreq;
-import static performanceModel.webSearch.connectAllServers;
+
 
 /**
  *
