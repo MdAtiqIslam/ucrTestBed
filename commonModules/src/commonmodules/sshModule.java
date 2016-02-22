@@ -105,7 +105,7 @@ public class sshModule {
     }
     
     
-    public static String sendCommand(Session session, String command) throws JSchException{
+    public String sendCommand(Session session, String command) throws JSchException{
 
         Channel channel = session.openChannel("shell");
         InputStream is = new ByteArrayInputStream(command.getBytes());

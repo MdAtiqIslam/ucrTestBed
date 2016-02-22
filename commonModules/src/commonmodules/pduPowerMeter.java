@@ -85,8 +85,8 @@ public class pduPowerMeter {
         resetReadings();
         //System.out.println(serverFeedback);
         extractReading();
-        //logToFile();
         responseSummarizer();
+        logToFile();
     }
 
     private void extractReading() {
