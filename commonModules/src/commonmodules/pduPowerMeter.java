@@ -31,9 +31,11 @@ public class pduPowerMeter {
     private final double samplingFreq = 1; //sample per seconds
     private final double loggingDuration;
     private pduMeterReading[] meterReadings;
-    private int logId;
+    private int logId=0;
+    private boolean writeToFile=false;
 
-    public pduPowerMeter(int[] ports, int loggingDuration) {
+    public pduPowerMeter(int[] ports, int loggingDuration, boolean writeToFile) {
+        this.writeToFile = writeToFile;
         this.loggingDuration = loggingDuration;
         this.ports = ports;
         this.noOfPorts = ports.length;
@@ -86,7 +88,7 @@ public class pduPowerMeter {
         //System.out.println(serverFeedback);
         extractReading();
         responseSummarizer();
-        logToFile();
+        if (writeToFile) logToFile();
     }
 
     private void extractReading() {
@@ -163,7 +165,7 @@ public class pduPowerMeter {
     }
     
     public void logToFile() throws IOException{
-        FileWriter writer = new FileWriter("C:\\local_files\\files\\output\\websearch\\power\\"+logId+"_"+System.currentTimeMillis()+".csv");
+        FileWriter writer = new FileWriter("C:\\local_files\\files\\output\\websearch\\power\\"+System.currentTimeMillis()+"_"+logId+".csv");
         for (int i=0; i<noOfPorts;i++){
             writer.append(String.valueOf("Port:"+ports[i]));
             writer.append(',');
