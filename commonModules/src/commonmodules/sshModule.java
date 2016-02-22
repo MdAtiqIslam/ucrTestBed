@@ -115,7 +115,7 @@ public class sshModule {
         channel.connect(5000);
         String aString = "";
             try {
-                Thread.sleep((long) (1 * 1000));
+                Thread.sleep((long) (10 * 1000));
             } catch (InterruptedException ex) {
                 Logger.getLogger(sshModule.class.getName()).log(Level.SEVERE, null, ex);
             }

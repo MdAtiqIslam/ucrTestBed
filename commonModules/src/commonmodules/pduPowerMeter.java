@@ -60,7 +60,7 @@ public class pduPowerMeter {
         //String logCommand = "olReading all power \n";
         String dateCommand = "date \n";
 
-        for (int i = 0; i < this.loggingDuration * this.samplingFreq *8; i++) {
+        for (int i = 0; i < this.loggingDuration * this.samplingFreq *10; i++) {
             //this.command += (dateCommand+logCommand);
             //without the date commnad, the date command does not work with "readonly user"
             this.command += logCommand;
@@ -172,6 +172,8 @@ public class pduPowerMeter {
         }
         writer.append('\n');
         for (int i = 0; i < noOfReadings; i++) {
+            writer.append(String.valueOf(meterReadings[i].timeStamp));
+            writer.append(',');
             for (int j=0; j<noOfPorts;j++){
                 writer.append(String.valueOf(meterReadings[i].readings[j]));
                 writer.append(',');
