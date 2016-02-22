@@ -46,7 +46,7 @@ public class webServ {
 //        checkServerFreq(servers);
         
         int[] ports = {21,18};
-        pduPowerMeter powerMeter = new pduPowerMeter(ports, slotDuration);
+        pduPowerMeter powerMeter = new pduPowerMeter(ports, slotDuration,true);
         powerMeter.startLogging();
         
         sshModule sshClient = new sshModule(clinetIP, clinetUser, clinetPassowrd);

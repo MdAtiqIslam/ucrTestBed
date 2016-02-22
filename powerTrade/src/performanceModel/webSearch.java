@@ -55,7 +55,7 @@ public class webSearch {
 
 
         int[] ports = {16};
-        pduPowerMeter powerMeter = new pduPowerMeter(ports, slotDuration);
+        pduPowerMeter powerMeter = new pduPowerMeter(ports, slotDuration,false);
         powerMeter.startLogging();
 
         int[] allFreq = {1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600};
