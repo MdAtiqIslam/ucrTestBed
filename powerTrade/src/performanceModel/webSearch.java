@@ -30,15 +30,14 @@ public class webSearch {
                                             "169.235.14.146"}; //server14
 // TODO: Hostname of the remote machine (eg: inst.eecs.berkeley.edu)
 
-    private static final String[] nutchIP = {"192.168.137.7",
-                                                "192.168.137.219"};
+    private static final String[] nutchIP = {"192.168.137.201"};//,"192.168.137.219"};
     private static final int noOfCore = 6; //for servers 6 to 10
     private static int slotDuration = 30;
     public static long logFolder;
 
     public static void main(String[] args) throws JSchException, InterruptedException, IOException {
         
-        int noOfServer = 2;
+        int noOfServer = 1;
         ServerXen[] servers = new ServerXen[noOfServer];
         for (int i = 0; i < servers.length; i++) {
             servers[i] = new ServerXen(hosts[i], user, password, noOfCore);
@@ -54,7 +53,7 @@ public class webSearch {
 //        }
 
 
-        int[] ports = {16};
+        int[] ports = {17};
         pduPowerMeter powerMeter = new pduPowerMeter(ports, slotDuration,false);
         powerMeter.startLogging();
 
