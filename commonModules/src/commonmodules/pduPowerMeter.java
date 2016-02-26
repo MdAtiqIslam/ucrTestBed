@@ -32,7 +32,7 @@ public class pduPowerMeter {
     private final double loggingDuration;
     private pduMeterReading[] meterReadings;
     private int logId=0;
-    private boolean writeToFile=false;
+    private boolean writeToFile;
 
     public pduPowerMeter(int[] ports, int loggingDuration, boolean writeToFile) {
         this.writeToFile = writeToFile;
