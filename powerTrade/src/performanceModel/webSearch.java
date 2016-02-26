@@ -24,9 +24,9 @@ import java.util.logging.Logger;
 public class webSearch {
 
     private static final String user = "root";
-    private static final String password = "SCGServer@15";
+    private static final String password = "srenserver";
 
-    private static final String[] hosts = {"169.235.14.144",//server12
+    private static final String[] hosts = {"169.235.14.140",//server12
                                             "169.235.14.146"}; //server14
 // TODO: Hostname of the remote machine (eg: inst.eecs.berkeley.edu)
 

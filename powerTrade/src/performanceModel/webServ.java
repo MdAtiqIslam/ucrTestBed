@@ -57,7 +57,8 @@ public class webServ {
         sshModule sshClient = new sshModule(clinetIP, clinetUser, clinetPassowrd);
         Session session = sshClient.startSession();
 
-        int[] noOfUsers = {100, 200, 300, 400, 500, 600, 700, 800, 900, 1000};
+        //int[] noOfUsers = {100, 200, 300, 400, 500, 600, 700, 800, 900, 1000};
+        int[] noOfUsers = {1200,1400,1600,1800,2000};
 
         for (int f = 0; f<6; f++) {
             int[] currentFreq = {freqFE[2 * f+1], freqBE[2 * f+4]};
@@ -71,6 +72,10 @@ public class webServ {
                 System.out.print(serverFeedback);
                 Thread.sleep((slotDuration*2 + 60) * 1000); //allow benchmark to finish
             }
+        }
+        
+        for (ServerXen server : servers) {
+            server.ServerDisconnect();
         }
 
     }
