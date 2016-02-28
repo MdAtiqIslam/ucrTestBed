@@ -9,7 +9,6 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
 
 /**
@@ -33,8 +32,10 @@ public class pduPowerMeter {
     private pduMeterReading[] meterReadings;
     private int logId=0;
     private boolean writeToFile;
+    private String logLocation;
 
-    public pduPowerMeter(int[] ports, int loggingDuration, boolean writeToFile) {
+    public pduPowerMeter(int[] ports, int loggingDuration, boolean writeToFile, String logLocation) {
+        this.logLocation = logLocation;
         this.writeToFile = writeToFile;
         this.loggingDuration = loggingDuration;
         this.ports = ports;
@@ -165,7 +166,8 @@ public class pduPowerMeter {
     }
     
     public void logToFile() throws IOException{
-        FileWriter writer = new FileWriter("C:\\local_files\\files\\output\\websearch\\power\\"+System.currentTimeMillis()+"_"+logId+".csv");
+        String fileName=logLocation+System.currentTimeMillis()+"_"+logId+".csv";
+        FileWriter writer = new FileWriter(fileName);
         for (int i=0; i<noOfPorts;i++){
             writer.append(String.valueOf("Port:"+ports[i]));
             writer.append(',');
