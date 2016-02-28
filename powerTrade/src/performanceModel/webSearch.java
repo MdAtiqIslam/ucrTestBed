@@ -54,7 +54,7 @@ public class webSearch {
 
 
         int[] ports = {17};
-        pduPowerMeter powerMeter = new pduPowerMeter(ports, slotDuration,false);
+        pduPowerMeter powerMeter = new pduPowerMeter(ports, slotDuration,true);
         powerMeter.startLogging();
 
         int[] allFreq = {1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600};
@@ -63,7 +63,7 @@ public class webSearch {
             for (int expNo = 0; expNo < allFreq.length; expNo++) {
                 changeServerFreq(servers, allFreq[expNo]);
                 checkServerFreq(servers);
-                loadGenSerial(noOfServer, powerMeter);
+                loadGenSerial(noOfServer, powerMeter,expNo+repeat*allFreq.length);
             }
         }
 
@@ -74,7 +74,7 @@ public class webSearch {
 
     }
     
-    public static void  loadGenSerial(int NoOfServers, pduPowerMeter powerMeter) throws InterruptedException, JSchException, IOException {
+    public static void  loadGenSerial(int NoOfServers, pduPowerMeter powerMeter, int runID) throws InterruptedException, JSchException, IOException {
 
         //int[] interArrivalTime = {0,100,200,300,400,500,600,700,800,900,1000,1100,1200,1300,1400,1500}; 
         int interArrivalTime = 200;
@@ -94,6 +94,7 @@ public class webSearch {
                     }
                 }
             });
+            powerMeter.setLogId(nt+NoOfThreadsArray.length*runID);
             meterRead.start();
             
             
