@@ -26,18 +26,21 @@ public class webSearch {
     private static final String user = "root";
     private static final String password = "srenserver";
 
-    private static final String[] hosts = {"169.235.14.140",//server12
-                                            "169.235.14.146"}; //server14
+    private static final String[] hosts = {"169.235.14.140",//server8
+                                            "169.235.14.141",//server9
+                                            "169.235.14.142"};//server10
 // TODO: Hostname of the remote machine (eg: inst.eecs.berkeley.edu)
 
-    private static final String[] nutchIP = {"192.168.137.201"};//,"192.168.137.219"};
-    private static final int noOfCore = 6; //for servers 6 to 10
-    private static int slotDuration = 30;
+    private static final String[] nutchIP = {"192.168.137.201","192.168.137.202","192.168.137.203"};
+    private static final int noOfCore = 2; //for servers 6 to 10
+    private final static int slotDuration = 60;
     public static long logFolder;
+    public static boolean logPowerToFile=true;
+    
 
     public static void main(String[] args) throws JSchException, InterruptedException, IOException {
         
-        int noOfServer = 1;
+        int noOfServer = 2 ;
         ServerXen[] servers = new ServerXen[noOfServer];
         for (int i = 0; i < servers.length; i++) {
             servers[i] = new ServerXen(hosts[i], user, password, noOfCore);
@@ -53,9 +56,10 @@ public class webSearch {
 //        }
 
 
-        int[] ports = {17};
-        String powerLogLocation = "C:\\local_files\\files\\output\\websearch\\power";
-        pduPowerMeter powerMeter = new pduPowerMeter(ports, slotDuration,true,powerLogLocation);
+        int[] ports = {17,16,15};
+        int[] activePorts = Arrays.copyOfRange(ports,0,noOfServer);
+        String powerLogLocation = "C:\\local_files\\files\\output\\websearch\\power\\";
+        pduPowerMeter powerMeter = new pduPowerMeter(activePorts,slotDuration+10,logPowerToFile,powerLogLocation);
         powerMeter.startLogging();
 
         int[] allFreq = {1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600};
@@ -64,9 +68,12 @@ public class webSearch {
             for (int expNo = 0; expNo < allFreq.length; expNo++) {
                 changeServerFreq(servers, allFreq[expNo]);
                 checkServerFreq(servers);
-                loadGenSerial(noOfServer, powerMeter,expNo+repeat*allFreq.length);
+                //loadGenSerial(noOfServer, powerMeter,expNo+repeat*allFreq.length);
+                loadGenParallel(noOfServer,powerMeter,expNo+repeat*allFreq.length);
             }
         }
+
+        //loadGenParallel(noOfServer,powerMeter);
 
         //disconnect servers
         for (ServerXen server : servers) {
@@ -75,11 +82,50 @@ public class webSearch {
 
     }
     
+    
+    
+        public static void loadGenParallel(int NoOfServers, pduPowerMeter powerMeter,int runID) throws InterruptedException{
+            
+        int[] NoOfReq = {100,500,1000,1500,2000,2500,3000,3500,4000};//, 3000, 3500, 4000};//, 3300, 3400, 3500};
+        for (int ii = 0; ii < NoOfReq.length; ii++) {
+            
+            Thread meterRead = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        powerMeter.startLogging(); //To change body of generated methods, choose Tools | Templates.
+                    } catch (JSchException | InterruptedException | IOException ex) {
+                        Logger.getLogger(webSearch.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            });
+            powerMeter.setLogId(ii + NoOfReq.length * runID);
+            meterRead.start();
+            Thread.sleep(10 * 1000);
+            
+            logFolder=System.currentTimeMillis();
+            List<LoadGenParallelServer> test = new ArrayList<>();
+            
+            for (int j = 0; j < NoOfServers; j++) {     //NoOfServers       
+                test.add(new LoadGenParallelServer(j, nutchIP[j], slotDuration, NoOfReq[ii]));
+                int xxcc=0;
+            }
+                Thread.sleep((slotDuration+30) * 1000);
+
+            //summary of response from the server
+            responseSummarizer(0, NoOfServers, NoOfReq[ii]);
+        }
+    }
+    
+    
+    
+    
+    
     public static void  loadGenSerial(int NoOfServers, pduPowerMeter powerMeter, int runID) throws InterruptedException, JSchException, IOException {
 
         //int[] interArrivalTime = {0,100,200,300,400,500,600,700,800,900,1000,1100,1200,1300,1400,1500}; 
         int interArrivalTime = 200;
-        int[] NoOfThreadsArray = {30,40,50,60,70};//{5, 10, 15, 20, 25, 35, 40, 45, 50, 55, 60, 65, 70};//{5,10,15,20,25,35,40,45,50,55,60,65,70};//{10,20,30,40,50,60,70,80,90,100};
+        int[] NoOfThreadsArray = {5};//,40,50,60,70};//{5, 10, 15, 20, 25, 35, 40, 45, 50, 55, 60, 65, 70};//{5,10,15,20,25,35,40,45,50,55,60,65,70};//{10,20,30,40,50,60,70,80,90,100};
         for (int nt = 0; nt < NoOfThreadsArray.length; nt++) {
             logFolder=System.currentTimeMillis();
            
@@ -155,17 +201,17 @@ public class webSearch {
         }
 
         Arrays.sort(allResponse);
+        int index99 = (int) Math.ceil(0.99 * totalRequest);
         int index95 = (int) Math.ceil(0.95 * totalRequest);
-        int index90 = (int) Math.ceil(0.90 * totalRequest);
-        double[] responseSummary = new double[4];
+        double[] responseSummary = new double[3];
 
         responseSummary[0] = sum / totalRequest; //data in milisecond
-        responseSummary[1] = allResponse[totalRequest - 1]; //maximum response time
+        //responseSummary[1] = allResponse[totalRequest - 1]; //maximum response time
+        responseSummary[1] = allResponse[index99]; //99% response time
         responseSummary[2] = allResponse[index95]; //95% response time
-        responseSummary[3] = allResponse[index90]; //90% response time
 
-        System.out.println(", Log: " + LogNumber + ", Avg. Response = " + responseSummary[0] + " ms, 95% Response = "
-                + responseSummary[2] + " ms, #Req " + totalRequest + " ,");
+        System.out.println(", Log: " + LogNumber + ", Avg. Response = " + responseSummary[0] + " ms, 99% Response = "
+                + responseSummary[1] + " ms, #Req " + totalRequest + " ,");
 
     }
 

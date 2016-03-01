@@ -43,7 +43,7 @@ public class cleanFS {
         }
         sshModule sshNode = new sshModule(host, user, password);
         Session session = sshNode.startSession();
-
+        System.out.println("Cleaning node"+host+"\n");
         System.out.print(sshNode.sendCommand(session, command));
 //        Thread.sleep(1000 * 2);
         sshNode.stopSession();
