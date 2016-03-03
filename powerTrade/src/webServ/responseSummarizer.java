@@ -5,7 +5,6 @@
  */
 package webServ;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
@@ -14,13 +13,6 @@ import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -34,14 +26,14 @@ import org.xml.sax.SAXException;
  */
 public class responseSummarizer {
 
-    private static int starRecordNo = 3;
-    private static char starRecordId = 'N';
-    private static int noOfRecords = 60;
-    private static String fileLocation = "D:\\Dropbox\\PhD Research\\Papers\\20 Power Trade\\experiments\\webserv\\results\\response_different_speed\\OlioDriver.";
-    private static HashMap<String, Double> avgResponse = new HashMap<>();
-    private static HashMap<String, Double> p90Response = new HashMap<>();
-    private static HashMap<String, Double> p99Response = new HashMap<>();
-    private static HashMap<String, Double> eventMix = new HashMap<>();
+    private static final int starRecordNo = 3;
+    private static final char starRecordId = 'N';
+    private static final int noOfRecords = 60;
+    private static final String fileLocation = "D:\\Dropbox\\PhD Research\\Papers\\20 Power Trade\\experiments\\webserv\\results\\response_different_speed\\OlioDriver.";
+    private static final HashMap<String, Double> avgResponse = new HashMap<>();
+    private static final HashMap<String, Double> p90Response = new HashMap<>();
+    private static final HashMap<String, Double> p99Response = new HashMap<>();
+    private static final HashMap<String, Double> eventMix = new HashMap<>();
 
     public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
 
@@ -169,7 +161,7 @@ public class responseSummarizer {
      private static void logToFile(double[][] allResults, String[] allIDs) {
         try {
             //FileWriter writer = new FileWriter("C:\\Source Code\\atiq_codes\\LoadGenHttp\\results\\"+threadNum+"_"+System.currentTimeMillis()+".csv");
-            String fileLocation = "D:\\Dropbox\\PhD Research\\Papers\\20 Power Trade\\experiments\\webserv\\results_all.csv";
+            String fileLocation = "D:\\Dropbox\\PhD Research\\Papers\\20 Power Trade\\experiments\\webserv\\"+System.currentTimeMillis()+"results_all"+".csv";
             FileWriter writer = new FileWriter(fileLocation);
             writer.append("ID,Average,p90,p99 \n");
 
