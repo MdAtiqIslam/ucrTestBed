@@ -6,8 +6,11 @@
 package webServ;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -23,6 +26,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+
 
 /**
  *
@@ -43,6 +47,8 @@ public class responseSummarizer {
 
         char currentRecordID = starRecordId;
         int currentRecordNo = starRecordNo;
+        double[][] allResults = new double[noOfRecords][3];
+        String[] allIDs = new String[noOfRecords];
 
         for (int i = 0; i < noOfRecords; i++) {
             String file = fileLocation + currentRecordNo + currentRecordID + "\\summary.xml";
@@ -57,17 +63,20 @@ public class responseSummarizer {
                 avgResponseWeighted += avgResponse.get(event) * eventMix.get(event);
                 //System.out.print(avgResponse.get(event));
             }
+            allResults[i][0]=avgResponseWeighted;
             double p90ResponseWeighted = 0;
             for (String event : events) {
                 p90ResponseWeighted += p90Response.get(event) * eventMix.get(event);
                 //System.out.print(avgResponse.get(event));
             }
-
+            allResults[i][1]=p90ResponseWeighted;
             double p99ResponseWeighted = 0;
             for (String event : events) {
                 p99ResponseWeighted += p90Response.get(event) * eventMix.get(event);
                 //System.out.print(avgResponse.get(event));
             }
+            allResults[i][2]=p99ResponseWeighted;
+            allIDs[i]=currentRecordNo + "" + currentRecordID;
             System.out.println(currentRecordNo + "" + currentRecordID + ": Average response=" + avgResponseWeighted
                     + ", 90% response=" + p90ResponseWeighted
                     + ", 99% response=" + p99ResponseWeighted);
@@ -80,6 +89,8 @@ public class responseSummarizer {
             }
 
         }
+        
+        logToFile(allResults,allIDs);
 
     }
 
@@ -154,5 +165,34 @@ public class responseSummarizer {
 
         }
     }
+    
+     private static void logToFile(double[][] allResults, String[] allIDs) {
+        try {
+            //FileWriter writer = new FileWriter("C:\\Source Code\\atiq_codes\\LoadGenHttp\\results\\"+threadNum+"_"+System.currentTimeMillis()+".csv");
+            String fileLocation = "D:\\Dropbox\\PhD Research\\Papers\\20 Power Trade\\experiments\\webserv\\results_all.csv";
+            FileWriter writer = new FileWriter(fileLocation);
+            writer.append("ID,Average,p90,p99 \n");
+
+            for (int i = 0; i < noOfRecords; i++) {
+                writer.append(String.valueOf(allIDs[i]));
+                writer.append(',');
+                writer.append(String.valueOf(allResults[i][0]));
+                writer.append(',');
+                writer.append(String.valueOf(allResults[i][1]));
+                writer.append(',');
+                writer.append(String.valueOf(allResults[i][2]));
+                writer.append('\n');
+            }
+
+            writer.flush();
+            writer.close();
+//        ReturnLog();
+//        ReturnLogSummary(avg_response,index+1);
+        } catch (IOException ex) {
+            Logger.getLogger(responseSummarizer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
 
 }
