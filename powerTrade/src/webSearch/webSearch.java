@@ -26,14 +26,14 @@ public class webSearch {
     private static final String user = "root";
     private static final String password = "srenserver";
 
-    private static final String[] hosts = {"169.235.14.140",//server8
-                                            "169.235.14.141",//server9
-                                            "169.235.14.142"};//server10
+    private static final String[] hosts = {"192.168.137.61",//server11
+                                            "192.168.137.62",//server12
+                                            "192.168.137.63"};//server13
 // TODO: Hostname of the remote machine (eg: inst.eecs.berkeley.edu)
 
     private static final String[] nutchIP = {"192.168.137.201","192.168.137.202","192.168.137.203"};
-    private static final int noOfCore = 2; //for servers 6 to 10
-    private final static int slotDuration = 60;
+    private static final int noOfCore = 6; //for servers 6 to 10
+    private final static int slotDuration = 120;
     public static long logFolder;
     public static boolean logPowerToFile=true;
     
@@ -56,14 +56,14 @@ public class webSearch {
 //        }
 
 
-        int[] ports = {17,16,15};
+        int[] ports = {14,12,11};
         int[] activePorts = Arrays.copyOfRange(ports,0,noOfServer);
         String powerLogLocation = "C:\\local_files\\files\\output\\websearch\\power\\";
-        pduPowerMeter powerMeter = new pduPowerMeter(activePorts,slotDuration+10,logPowerToFile,powerLogLocation);
+        pduPowerMeter powerMeter = new pduPowerMeter(activePorts,slotDuration+15,logPowerToFile,powerLogLocation);
         powerMeter.startLogging();
 
-        int[] allFreq = {1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600};
-        //int[] allFreq = {1800,1900,2000,2001};//{1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2001};
+        //int[] allFreq = {1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600};
+        int[] allFreq = {1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2001};
         for (int repeat = 0; repeat < 2; repeat++) {
             for (int expNo = 0; expNo < allFreq.length; expNo++) {
                 changeServerFreq(servers, allFreq[expNo]);
@@ -86,8 +86,15 @@ public class webSearch {
     
         public static void loadGenParallel(int NoOfServers, pduPowerMeter powerMeter,int runID) throws InterruptedException{
             
-        int[] NoOfReq = {100,500,1000,1500,2000,2500,3000,3500,4000};//, 3000, 3500, 4000};//, 3300, 3400, 3500};
-        for (int ii = 0; ii < NoOfReq.length; ii++) {
+        //int[] NoOfReq = {100,500,1000,1500,2000,2500,3000,3500,4000};//, 3000, 3500, 4000};//, 3300, 3400, 3500};
+        int[] reqPerSec = {20, 40, 60, 80, 100, 120, 140, 160, 180, 200};
+        //int[] reqPerSec = {200,300,400,500};
+        
+        int[] noOfReq = new int[reqPerSec.length];
+        for (int i=0;i<reqPerSec.length;i++){
+            noOfReq[i]=reqPerSec[i]*slotDuration;
+        }
+        for (int ii = 0; ii < noOfReq.length; ii++) {
             
             Thread meterRead = new Thread(new Runnable() {
                 @Override
@@ -99,7 +106,7 @@ public class webSearch {
                     }
                 }
             });
-            powerMeter.setLogId(ii + NoOfReq.length * runID);
+            powerMeter.setLogId(ii + noOfReq.length * runID);
             meterRead.start();
             Thread.sleep(10 * 1000);
             
@@ -107,13 +114,13 @@ public class webSearch {
             List<LoadGenParallelServer> test = new ArrayList<>();
             
             for (int j = 0; j < NoOfServers; j++) {     //NoOfServers       
-                test.add(new LoadGenParallelServer(j, nutchIP[j], slotDuration, NoOfReq[ii]));
+                test.add(new LoadGenParallelServer(j, nutchIP[j], slotDuration, noOfReq[ii]));
                 int xxcc=0;
             }
                 Thread.sleep((slotDuration+30) * 1000);
 
             //summary of response from the server
-            responseSummarizer(0, NoOfServers, NoOfReq[ii]);
+            responseSummarizer(0, NoOfServers, noOfReq[ii]);
         }
     }
     
@@ -210,8 +217,9 @@ public class webSearch {
         responseSummary[1] = allResponse[index99]; //99% response time
         responseSummary[2] = allResponse[index95]; //95% response time
 
-        System.out.println(", Log: " + LogNumber + ", Avg. Response = " + responseSummary[0] + " ms, 99% Response = "
-                + responseSummary[1] + " ms, #Req " + totalRequest + " ,");
+        System.out.println(", Log: " + LogNumber + ", Avg. Response = " + responseSummary[0] 
+                + " ms, 95% Response = "+ responseSummary[2] 
+                + " ms, 99% Response = "+ responseSummary[1] + " ms, #Req " + totalRequest + " ,");
 
     }
 
