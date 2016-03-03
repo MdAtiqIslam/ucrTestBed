@@ -33,6 +33,7 @@ public class pduPowerMeter {
     private int logId=0;
     private boolean writeToFile;
     private String logLocation;
+    private int slotSizeForMax=10;
 
     public pduPowerMeter(int[] ports, int loggingDuration, boolean writeToFile, String logLocation) {
         this.logLocation = logLocation;
@@ -71,6 +72,9 @@ public class pduPowerMeter {
     public void setLogId(int logId){
         this.logId=logId;
     }
+    public void setMaxSlotSize(int size) {
+        this.slotSizeForMax = size;
+    }
 
     public void resetReadings(){
         for (int i=0; i<noOfReadings; i++){
@@ -88,7 +92,8 @@ public class pduPowerMeter {
         resetReadings();
         //System.out.println(serverFeedback);
         extractReading();
-        responseSummarizer();
+        //responseSummarizer();
+        responseSummarizerNew();
         if (writeToFile) logToFile();
     }
 
@@ -152,7 +157,7 @@ public class pduPowerMeter {
             int readingCount=0;
             for(int j=0; j<noOfReadings;j++){
                 double currentReading = meterReadings[j].readings[i];
-                if (currentReading !=0) {average[i] += currentReading; readingCount++;}
+                if (currentReading !=0 && currentReading<110) {average[i] += currentReading; readingCount++;}
                 if (currentReading>max[i]) max[i]=currentReading;
             }
             if (readingCount>0) average[i] = average[i]/readingCount;
@@ -163,6 +168,52 @@ public class pduPowerMeter {
         }
         
         
+    }
+    
+    public void responseSummarizerNew() {
+        double[] average = new double[noOfPorts];
+        double[] max = new double[noOfPorts];
+        for (int i = 0; i < noOfPorts; i++) {
+            average[i] = 0;
+            max[i] = 0;
+        }
+
+        for (int i = 0; i < noOfPorts; i++) {
+            int readingCount = 0;
+            for (int j = 0; j < noOfReadings; j++) {
+                double currentReading = meterReadings[j].readings[i];
+                if (currentReading != 0 && currentReading < 100) {
+                    average[i] += currentReading;
+                    readingCount++;
+                }
+                if (j >= slotSizeForMax) {
+                    double runningSum = 0;
+                    int readingCount2 = 0;
+                    for (int k = 0; k < slotSizeForMax; k++) {
+                        double currentReading2 = meterReadings[j - slotSizeForMax + k].readings[i];
+                        if (currentReading2 != 0 && currentReading < 110) {
+                            runningSum += currentReading2;
+                            readingCount2++;
+                        }
+                    }
+                    if (readingCount2 > 0) {
+                        double slotAvg = runningSum / readingCount2;
+                        if (slotAvg > max[i]) {
+                            max[i] = slotAvg;
+                        }
+                    }
+                }
+            }
+            if (readingCount > 0) {
+                average[i] = average[i] / readingCount;
+            } else {
+                average[i] = 0;
+            }
+        }
+        for (int i = 0; i < noOfPorts; i++) {
+            System.out.print("Port " + ports[i] + "- Avg:" + average[i] + ", Max:" + max[i] + ",");
+        }
+
     }
     
     public void logToFile() throws IOException{
