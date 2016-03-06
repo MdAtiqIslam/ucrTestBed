@@ -17,7 +17,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import webSearch.webSearch;
 
-
 /**
  *
  * @author moislam
@@ -51,31 +50,34 @@ public class webServ {
         int[] freqFE = {1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2201};
         int[] freqBE = {1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600};
 
-        int[] ports = {21, 18};
-        String powerLogLocation = "C:\\local_files\\files\\output\\webserv\\power";
-        pduPowerMeter powerMeter = new pduPowerMeter(ports, slotDuration*2, true,powerLogLocation);
+        int[] ports = {20, 18};
+        String powerLogLocation = "C:\\local_files\\files\\output\\webserv\\power\\";
+        pduPowerMeter powerMeter = new pduPowerMeter(ports, slotDuration * 4, true, powerLogLocation);
         //powerMeter.startLogging();
 
         sshModule sshClient = new sshModule(clinetIP, clinetUser, clinetPassowrd);
         Session session = sshClient.startSession();
 
-        //int[] noOfUsers = {100, 200, 300, 400, 500, 600, 700, 800, 900, 1000};
-        int[] noOfUsers = {1200,1400,1600,1800,2000};
+        int[] noOfUsers = {200, 400, 600, 800, 1000, 1200};
+        //int[] noOfUsers = {1200,1400,1600,1800,2000};
 
-        for (int f = 0; f<6; f++) {
-            int[] currentFreq = {freqFE[2 * f+1], freqBE[2 * f+4]};
+        for (int f = 5; f >=0; f--) {
+            int[] currentFreq = {freqFE[2 * f + 1], freqBE[2 * f + 4]};
             changeServerFreq(servers, currentFreq);
             checkServerFreq(servers);
+
             for (int i = 0; i < noOfUsers.length; i++) {
-                powerMeter.setLogId(i+f*10);
-                startPowerMeters(powerMeter);
-                String command = "faban/bin/fabancli submit OlioDriver test /home/testbed/inputConfig/run_" + noOfUsers[i] + ".xml \n";
-                String serverFeedback = sshClient.sendCommand(session, command);
-                System.out.print(serverFeedback);
-                Thread.sleep((slotDuration*2 + 60) * 1000); //allow benchmark to finish
+                for (int rep = 0; rep < 3; rep++) {
+                    powerMeter.setLogId(i + f * noOfUsers.length);
+                    startPowerMeters(powerMeter);
+                    String command = "faban/bin/fabancli submit OlioDriver test /home/testbed/inputConfig/run_" + noOfUsers[i] + ".xml \n";
+                    String serverFeedback = sshClient.sendCommand(session, command);
+                    System.out.print(serverFeedback);
+                    Thread.sleep((slotDuration * 4 + 60) * 1000); //allow benchmark to finish
+                }
             }
         }
-        
+
         for (ServerXen server : servers) {
             server.ServerDisconnect();
         }

@@ -87,7 +87,8 @@ public class webSearch {
         public static void loadGenParallel(int NoOfServers, pduPowerMeter powerMeter,int runID) throws InterruptedException{
             
         //int[] NoOfReq = {100,500,1000,1500,2000,2500,3000,3500,4000};//, 3000, 3500, 4000};//, 3300, 3400, 3500};
-        int[] reqPerSec = {20, 40, 60, 80, 100, 120, 140, 160, 180, 200};
+        //int[] reqPerSec = {20, 40, 60, 80, 100, 120, 140, 160, 180, 200};
+        int[] reqPerSec = {220,240,260};
         //int[] reqPerSec = {200,300,400,500};
         
         int[] noOfReq = new int[reqPerSec.length];
