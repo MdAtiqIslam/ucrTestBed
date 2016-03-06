@@ -26,10 +26,10 @@ import org.xml.sax.SAXException;
  */
 public class responseSummarizer {
 
-    private static final int starRecordNo = 3;
-    private static final char starRecordId = 'N';
-    private static final int noOfRecords = 60;
-    private static final String fileLocation = "D:\\Dropbox\\PhD Research\\Papers\\20 Power Trade\\experiments\\webserv\\results\\response_different_speed\\OlioDriver.";
+    private static final int starRecordNo = 8;
+    private static final char starRecordId = 'M';
+    private static final int noOfRecords = 108;
+    private static String fileLocation = "C:\\local_files\\files\\output\\webserv\\results\\03.04.16\\response\\";
     private static final HashMap<String, Double> avgResponse = new HashMap<>();
     private static final HashMap<String, Double> p90Response = new HashMap<>();
     private static final HashMap<String, Double> p99Response = new HashMap<>();
@@ -43,7 +43,7 @@ public class responseSummarizer {
         String[] allIDs = new String[noOfRecords];
 
         for (int i = 0; i < noOfRecords; i++) {
-            String file = fileLocation + currentRecordNo + currentRecordID + "\\summary.xml";
+            String file = fileLocation + "OlioDriver."+currentRecordNo + currentRecordID + "\\summary.xml";
             //System.out.println(file);
             Document doc = getDoc(file);
             resultMixParser(doc);
@@ -64,7 +64,7 @@ public class responseSummarizer {
             allResults[i][1]=p90ResponseWeighted;
             double p99ResponseWeighted = 0;
             for (String event : events) {
-                p99ResponseWeighted += p90Response.get(event) * eventMix.get(event);
+                p99ResponseWeighted += p99Response.get(event) * eventMix.get(event);
                 //System.out.print(avgResponse.get(event));
             }
             allResults[i][2]=p99ResponseWeighted;
@@ -82,7 +82,7 @@ public class responseSummarizer {
 
         }
         
-        logToFile(allResults,allIDs);
+        logToFile(allResults,allIDs,fileLocation);
 
     }
 
@@ -94,7 +94,7 @@ public class responseSummarizer {
         return doc;
     }
 
-    public static void resultSummaryParser(Document doc) {
+    public static void resultSummaryParser(Document doc) throws java.lang.NumberFormatException{
 
         NodeList benchmark = doc.getElementsByTagName("responseTimes");
         Node responseTimes = benchmark.item(0);
@@ -110,19 +110,28 @@ public class responseSummarizer {
                 NodeList opList = operation.getChildNodes();
                 for (int j = 0; j < opList.getLength(); j++) {
                     Node opResults = opList.item(j);
+                    
                     if (opResults.getNodeType() == Node.ELEMENT_NODE) {
                         Element opResultItem = (Element) opResults;
+                        
                         if (opResultItem.getNodeName().equals("avg")) {
+                            try{
                             avgRes = Double.parseDouble(opResultItem.getTextContent());
                             //System.out.print(name + "mix=" + mix+ "\\n");
                             avgResponse.put(name, avgRes);
+                            }catch (NumberFormatException ex){avgResponse.put(name, 19.8);};
                         } else if (opResultItem.getNodeName().equals("p90th")) {
+                            try{
                             p90Res = Double.parseDouble(opResultItem.getTextContent());
                             p90Response.put(name, p90Res);
+                            }catch (NumberFormatException ex){p90Response.put(name, 19.8);};
                         } else if (opResultItem.getNodeName().equals("p99th")) {
+                            try{
                             p99Res = Double.parseDouble(opResultItem.getTextContent());
                             p99Response.put(name, p99Res);
+                            }catch (NumberFormatException ex){p99Response.put(name, 19.8);};
                         }
+                        
                     }
                 }
             }
@@ -158,11 +167,11 @@ public class responseSummarizer {
         }
     }
     
-     private static void logToFile(double[][] allResults, String[] allIDs) {
+     private static void logToFile(double[][] allResults, String[] allIDs, String loaction) {
         try {
             //FileWriter writer = new FileWriter("C:\\Source Code\\atiq_codes\\LoadGenHttp\\results\\"+threadNum+"_"+System.currentTimeMillis()+".csv");
-            String fileLocation = "D:\\Dropbox\\PhD Research\\Papers\\20 Power Trade\\experiments\\webserv\\"+System.currentTimeMillis()+"results_all"+".csv";
-            FileWriter writer = new FileWriter(fileLocation);
+            String fileLocationLocal =loaction+"results_all"+".csv";
+            FileWriter writer = new FileWriter(fileLocationLocal);
             writer.append("ID,Average,p90,p99 \n");
 
             for (int i = 0; i < noOfRecords; i++) {
