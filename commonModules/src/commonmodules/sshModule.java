@@ -128,7 +128,7 @@ public class sshModule {
         return aString;
     }
 
-    public String sendCommandWcheck(Session session, String command) throws JSchException {
+    public String sendCommandWcheck(Session session, String command, int timeOut) throws JSchException {
 
         Channel channel = session.openChannel("shell");
         InputStream is = new ByteArrayInputStream(command.getBytes());
@@ -139,6 +139,7 @@ public class sshModule {
         String serverFeedback = "";
         boolean jobDone = false;
         int loopCount = 0;
+        int timeOutCount=timeOut*60/5;
         while (!jobDone) {
             loopCount++;
             
@@ -171,7 +172,10 @@ public class sshModule {
                 }
             }
             serverFeedback += aString;
-            if(loopCount>40) break;
+            if(loopCount>timeOutCount) {
+                System.out.println("Warning!!!! Check timed out. Job end not detected!!!!");
+                break;
+            }
         }
 
         channel.disconnect();

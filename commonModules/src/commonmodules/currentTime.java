@@ -12,15 +12,17 @@ import java.text.SimpleDateFormat;
  * @author atiq
  */
 public class currentTime {
-    SimpleDateFormat time_formatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss.SSS");
-    String current_time_str = time_formatter.format(System.currentTimeMillis());
-    
-    public void printCurrentTime(){
-        System.out.print(this.current_time_str);
+
+    public static void printCurrentTime() {
+        SimpleDateFormat time_formatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss.SSS");
+        String current_time_str = time_formatter.format(System.currentTimeMillis());
+        System.out.print(current_time_str);
     }
-    
-    public String getCurrentTime(){
-        return this.current_time_str;
+
+    public static String getCurrentTime() {
+        SimpleDateFormat time_formatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss.SSS");
+        String current_time_str = time_formatter.format(System.currentTimeMillis());
+        return current_time_str;
     }
-    
+
 }
