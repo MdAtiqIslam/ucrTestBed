@@ -22,6 +22,7 @@ import java.util.logging.Logger;
 public class loadGen {
 
     private static final String xenUser = "root";
+    private static final String hadoopUser = "hduser";
     private static final String password = "srenserver";
     private static final String[] xenServerIPs = {"192.168.137.52", "192.168.137.53"};
 
@@ -43,17 +44,23 @@ public class loadGen {
         connectAllServers(servers);
         checkServerFreq(servers);
         
-        
-        int[] ports = {23,22};
-        int[] activePorts = Arrays.copyOfRange(ports,0,noOfServer);
-        String powerLogLocation = "C:\\local_files\\files\\output\\hadoop\\power\\";
-        pduPowerMeter powerMeter = new pduPowerMeter(activePorts,slotDuration,logPowerToFile,powerLogLocation);
-        System.out.println("Power loging started \n");
-        powerMeter.startLogging();
-        
-        int[] allFreq = {1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600, 2601};
+        hadoopMaster master = new  hadoopMaster(nodeIP[0],hadoopUser,password);
+        master.startSession();
+        master.deletFolder("/teraSort/output/1G");
+        master.startSort("1G");
         
         
+//        int[] ports = {23,22};
+//        int[] activePorts = Arrays.copyOfRange(ports,0,noOfServer);
+//        String powerLogLocation = "C:\\local_files\\files\\output\\hadoop\\power\\";
+//        pduPowerMeter powerMeter = new pduPowerMeter(activePorts,slotDuration,logPowerToFile,powerLogLocation);
+//        System.out.println("Power loging started \n");
+//        //powerMeter.startLogging();
+//        
+//        int[] allFreq = {1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600, 2601};
+//
+//        changeServerFreq(servers, allFreq[15]);
+//        checkServerFreq(servers);
         
         
         for (ServerXen server : servers) {
