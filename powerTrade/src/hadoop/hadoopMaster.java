@@ -18,6 +18,7 @@ public class hadoopMaster {
     private String masterIP;
     private String user;
     private String password;
+    private int maxJobTime;
     
     sshModule sshHadoopMaster;
     Session session;
@@ -27,21 +28,35 @@ public class hadoopMaster {
         this.user = user;
         this.password = password;
         this.sshHadoopMaster = new sshModule(masterIP, user, password);
+        this.maxJobTime = 10;
     }
     
+    public hadoopMaster(String IP, String user, String password, int maxTimeOut) {
+        this.masterIP = IP;
+        this.user = user;
+        this.password = password;
+        this.sshHadoopMaster = new sshModule(masterIP, user, password);
+        this.maxJobTime = maxTimeOut;
+    }
+
     public void startSession() throws JSchException {
         this.session = sshHadoopMaster.startSession();
     }
     
+        public void disConnect() throws JSchException {
+        this.session.disconnect();
+    }
+    
     public void deletFolder(String fileLoaction) throws JSchException {
         String command = "/usr/local/hadoop/bin/hadoop dfs -rm -r "+fileLoaction+" \n";
-        System.out.print(sshHadoopMaster.sendCommand(session, command));
+        String serverFeddbakc = sshHadoopMaster.sendCommand(session, command);
+        //System.out.print(serverFeddbakc);
     }
     
     public void startSort(String inputFile) throws JSchException{
         String command = "/usr/local/hadoop/bin/hadoop jar /usr/local/hadoop/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.6.2.jar terasort /teraSort/input/"+inputFile+" /teraSort/output/"+inputFile+ " \n";
-        System.out.print(sshHadoopMaster.sendCommandWcheck(session, command));
-        
+        String serverFeddbakc = sshHadoopMaster.sendCommandWcheck(session, command, this.maxJobTime);
+        //System.out.print(serverFeddbakc);        
     }
 
 }

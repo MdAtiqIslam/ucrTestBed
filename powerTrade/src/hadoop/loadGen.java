@@ -30,7 +30,7 @@ public class loadGen {
         "192.168.137.181", "192.168.137.182", "192.168.137.183", "192.168.137.184", "192.168.137.185", "192.168.137.186", "192.168.137.187", "192.168.137.188"};
 
     private static final int noOfCore = 16; //for servers 6 to 10
-    private final static int slotDuration = 20*60;
+    private final static int slotDuration = 10*60;
     public static long logFolder;
     public static boolean logPowerToFile = true;
 
@@ -45,24 +45,29 @@ public class loadGen {
         checkServerFreq(servers);
         
         hadoopMaster master = new  hadoopMaster(nodeIP[0],hadoopUser,password);
-        master.startSession();
-        master.deletFolder("/teraSort/output/1G");
-        master.startSort("1G");
+        master.startSession(); 
         
         
-//        int[] ports = {23,22};
-//        int[] activePorts = Arrays.copyOfRange(ports,0,noOfServer);
-//        String powerLogLocation = "C:\\local_files\\files\\output\\hadoop\\power\\";
-//        pduPowerMeter powerMeter = new pduPowerMeter(activePorts,slotDuration,logPowerToFile,powerLogLocation);
-//        System.out.println("Power loging started \n");
-//        //powerMeter.startLogging();
-//        
-//        int[] allFreq = {1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600, 2601};
-//
-//        changeServerFreq(servers, allFreq[15]);
-//        checkServerFreq(servers);
+        int[] ports = {23,22};
+        int[] activePorts = Arrays.copyOfRange(ports,0,noOfServer);
+        String powerLogLocation = "C:\\local_files\\files\\output\\hadoop\\power\\";
+        pduPowerMeter powerMeter = new pduPowerMeter(activePorts,slotDuration,logPowerToFile,powerLogLocation);
+        System.out.println("Power loging started \n");
+        powerMeter.startLogging();
         
+        int[] allFreq = {1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600, 2601};
         
+        String fileName="3G";
+        for (int i=0; i<allFreq.length;i+=3){
+            changeServerFreq(servers, allFreq[i]);
+            checkServerFreq(servers);
+            
+            hadoopSort(master,fileName);
+            powerMeterLog(powerMeter);
+            Thread.sleep((slotDuration+60)*1000);
+        }     
+        
+        master.disConnect();
         for (ServerXen server : servers) {
             server.ServerDisconnect();
         } 
@@ -102,5 +107,41 @@ public class loadGen {
         }
 
     }
+    
+    public static void powerMeterLog(pduPowerMeter powerMeter){
+                    Thread meterRead = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        powerMeter.startLogging(); //To change body of generated methods, choose Tools | Templates.
+                    } catch (JSchException | InterruptedException | IOException ex) {
+                        Logger.getLogger(loadGen.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            });
+            meterRead.start();
+    }
 
+    
+    public static void hadoopSort(hadoopMaster master, String fileName) {
+        Thread sort = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    master.deletFolder("/teraSort/output/" + fileName);
+                    System.out.print("Sorting started at " + commonmodules.currentTime.getCurrentTime());
+                    long sortStrat = System.currentTimeMillis();
+                    master.startSort(fileName);
+                    long sortEnd = System.currentTimeMillis();
+                    System.out.print(", Ends at " + commonmodules.currentTime.getCurrentTime());
+                    System.out.print(",Total time" + (sortEnd - sortStrat) / 1000 + "seconds"); //To change body of generated methods, choose Tools | Templates.
+                } catch (JSchException ex) {
+                    Logger.getLogger(loadGen.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+        sort.start();
+    }
+
+    
 }
