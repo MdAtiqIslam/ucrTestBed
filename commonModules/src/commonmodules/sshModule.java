@@ -61,7 +61,6 @@ public class sshModule {
         session.disconnect();
     }
 
-    
     public String sendCommandPDU(Session session, String command, double samplingRate, double loggingDuration) throws JSchException, InterruptedException, IOException {
 
         Channel channel = session.openChannel("shell");
@@ -101,11 +100,10 @@ public class sshModule {
         }
         is.reset();
         channel.disconnect();
-        return feedBack+"\nResponse time: finish";
+        return feedBack + "\nResponse time: finish";
     }
-    
-    
-    public String sendCommand(Session session, String command) throws JSchException{
+
+    public String sendCommand(Session session, String command) throws JSchException {
 
         Channel channel = session.openChannel("shell");
         InputStream is = new ByteArrayInputStream(command.getBytes());
@@ -114,6 +112,37 @@ public class sshModule {
         channel.setOutputStream(output);
         channel.connect(5000);
         String aString = "";
+        try {
+            Thread.sleep((long) (5 * 1000));
+        } catch (InterruptedException ex) {
+            Logger.getLogger(sshModule.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        try {
+            aString = new String(output.toByteArray(), "UTF-8");
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(sshModule.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        channel.disconnect();
+        return aString;
+    }
+
+    public String sendCommandWcheck(Session session, String command) throws JSchException {
+
+        Channel channel = session.openChannel("shell");
+        InputStream is = new ByteArrayInputStream(command.getBytes());
+        channel.setInputStream(is);
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        channel.setOutputStream(output);
+        channel.connect(5000);
+        String serverFeedback = "";
+        boolean jobDone = false;
+        int loopCount = 0;
+        while (!jobDone) {
+            loopCount++;
+            
+            String aString = "";
             try {
                 Thread.sleep((long) (5 * 1000));
             } catch (InterruptedException ex) {
@@ -125,9 +154,28 @@ public class sshModule {
             } catch (UnsupportedEncodingException ex) {
                 Logger.getLogger(sshModule.class.getName()).log(Level.SEVERE, null, ex);
             }
+            output.reset();
+
+            String lines[] = aString.split("\\r?\\n");
+
+            for (String line : lines) {
+                if (line.matches("(?i).*completed successfully.*")) {
+                    jobDone = true;
+                    aString+="\n Job done detected";
+                    break;
+                }
+                if (line.matches("(?i).*terasort.TeraSort: done.*")) {
+                    jobDone = true;
+                    aString+="\n Job done detected";
+                    break;
+                }
+            }
+            serverFeedback += aString;
+            if(loopCount>40) break;
+        }
 
         channel.disconnect();
-        return aString;
+        return serverFeedback;
     }
 
 }
