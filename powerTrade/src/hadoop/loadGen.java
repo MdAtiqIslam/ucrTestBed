@@ -30,7 +30,7 @@ public class loadGen {
         "192.168.137.181", "192.168.137.182", "192.168.137.183", "192.168.137.184", "192.168.137.185", "192.168.137.186", "192.168.137.187", "192.168.137.188"};
 
     private static final int noOfCore = 16; //for servers 6 to 10
-    private final static int slotDuration = 10*60;
+    private final static int slotDuration = 9*60;
     public static long logFolder;
     public static boolean logPowerToFile = true;
 
@@ -55,10 +55,11 @@ public class loadGen {
         System.out.println("Power loging started \n");
         powerMeter.startLogging();
         
-        int[] allFreq = {1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600, 2601};
+        //int[] allFreq = {1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600, 2601};
+        int[] allFreq = {1300, 1400, 1600, 1700, 1900, 2000, 2200, 2300, 2500, 2600};
         
         String fileName="3G";
-        for (int i=0; i<allFreq.length;i+=3){
+        for (int i=0; i<allFreq.length;i++){
             changeServerFreq(servers, allFreq[i]);
             checkServerFreq(servers);
             
