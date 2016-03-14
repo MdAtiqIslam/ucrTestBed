@@ -90,14 +90,20 @@ public class expHadoop {
     }
 
     public static void changeServerFreq(ServerXen[] servers, int freq) {
-        for (ServerXen server : servers) {
-            try {
-                server.setFreq(freq);
-            } catch (JSchException ex) {
-                Logger.getLogger(LoadGenHadoop.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
 
+        for (ServerXen server : servers) {
+            Thread chnageFreqParallel = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        server.setFreq(freq);
+                    } catch (JSchException ex) {
+                        Logger.getLogger(expHadoop.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            });
+            chnageFreqParallel.start();
+        }
     }
 
     public static void checkServerFreq(ServerXen[] servers) {

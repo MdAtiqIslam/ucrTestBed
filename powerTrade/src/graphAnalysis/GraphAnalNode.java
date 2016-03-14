@@ -48,17 +48,15 @@ public class GraphAnalNode {
     }
         
     public void analTwiter(int noCPU) throws JSchException {
-        String command = "PowerGraph/release/toolkits/graph_analytics/tunkrank --graph=/home/testbed/Twitter-dataset/data/twitter_small_data_graplab.in --format=tsv --ncpus="+noCPU+" --engine=asynchronous";
+        String command = "PowerGraph/release/toolkits/graph_analytics/tunkrank --graph=/home/testbed/Twitter-dataset/data/twitter_small_data_graplab.in --format=tsv --ncpus="+noCPU+" --engine=asynchronous \n";
         String serverFeddbakc = sshGraphNode.sendCommandWcheck(session, command, this.maxJobTime);
         //System.out.print(serverFeddbakc);        
     }
     
     public void analSynth(int vertices, int noCPU) throws JSchException {
-        String command = "PowerGraph/release/toolkits/graph_analytics/tunkrank --powerlaw="+vertices+" --ncpus="+noCPU+" --engine=asynchronous";
+        String command = "PowerGraph/release/toolkits/graph_analytics/tunkrank --powerlaw="+vertices+" --ncpus="+noCPU+" --engine=asynchronous \n";
         String serverFeddbakc = sshGraphNode.sendCommandWcheck(session, command, this.maxJobTime);
-        System.out.print(serverFeddbakc);        
+        //System.out.print(serverFeddbakc);        
     }
-
-    
     
 }

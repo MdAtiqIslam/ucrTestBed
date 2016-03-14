@@ -20,7 +20,7 @@ import java.util.logging.Logger;
  *
  * @author atiq
  */
-public class LoadGenGraph {
+public class expGraph {
 
     private static final String xenUser = "root";
     private static final String graphUser = "testbed";
@@ -57,15 +57,31 @@ public class LoadGenGraph {
         graphNodes[1].startSession();
         //int noOfUser=15000000;
         int noOfUser = 10000000;
-
-        changeServerFreq(servers, allfreq[0]);
+        
+        for (int rep=0; rep<2;rep++){
+        for (int i=0; i<allfreq.length;i++){
+        changeServerFreq(servers, allfreq[i]);
         checkServerFreq(servers);
-        System.out.println("Power loging started \n");
+        //System.out.println("Power loging started \n");
+        powerMeter.setLogId(i+rep*allfreq.length+100);
         startPowerMeter(powerMeter);
         Thread.sleep((0 + 10) * 1000);
         startGraph(graphNodes, noOfUser);
 
-        Thread.sleep((slotDuration + 10) * 1000);
+        Thread.sleep((slotDuration+20) * 1000);
+        }
+        }
+        
+        changeServerFreq(servers, allfreq[0]);
+        checkServerFreq(servers);
+        System.out.println("!!!!!!!!!!Experiment runs started!!!!!!!!!!!!!!!!!!!");
+        for (int i=0; i<20; i++){
+            powerMeter.setLogId(i);
+            startPowerMeter(powerMeter);
+            Thread.sleep((0 + 10) * 1000);
+            startGraph(graphNodes, noOfUser);
+            Thread.sleep((slotDuration + 20) * 1000);
+        }
         
         graphNodes[0].disConnect();
         graphNodes[1].disConnect();
@@ -92,7 +108,7 @@ public class LoadGenGraph {
                         System.out.println("Node" + currentNodeID + " ends at " + commonmodules.currentTime.getCurrentTime());
                         System.out.println("Node" + currentNodeID + " total time" + (graphEnd - garphStrat) / 1000 + "seconds");
                     } catch (JSchException ex) {
-                        Logger.getLogger(LoadGenGraph.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(expGraph.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
             });
@@ -108,7 +124,7 @@ public class LoadGenGraph {
                 try {
                     powerMeter.startLogging(); //To change body of generated methods, choose Tools | Templates.
                 } catch (JSchException | InterruptedException | IOException ex) {
-                    Logger.getLogger(LoadGenGraph.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(expGraph.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });
