@@ -30,7 +30,7 @@ public class expHadoop {
         "192.168.137.181", "192.168.137.182", "192.168.137.183", "192.168.137.184", "192.168.137.185", "192.168.137.186", "192.168.137.187", "192.168.137.188"};
 
     private static final int noOfCore = 16; //for servers 6 to 10
-    private final static int slotDuration = 10*60;
+    private final static int slotDuration = 15*60;
     public static long logFolder;
     public static boolean logPowerToFile = true;
 
@@ -66,8 +66,8 @@ public class expHadoop {
         hadoopStart(master,fileName);
         //serverFreqChange(allFreq,servers);
         Thread.sleep(60*3*1000);
-        changeServerFreq(servers, allFreq[14]);
-        checkServerFreq(servers);
+//        changeServerFreq(servers, allFreq[14]);
+//        checkServerFreq(servers);
    
 //        
         Thread.sleep((slotDuration-3)*1000);

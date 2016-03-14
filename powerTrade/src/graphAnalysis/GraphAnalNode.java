@@ -56,7 +56,7 @@ public class GraphAnalNode {
     public void analSynth(int vertices, int noCPU) throws JSchException {
         String command = "PowerGraph/release/toolkits/graph_analytics/tunkrank --powerlaw="+vertices+" --ncpus="+noCPU+" --engine=asynchronous";
         String serverFeddbakc = sshGraphNode.sendCommandWcheck(session, command, this.maxJobTime);
-        //System.out.print(serverFeddbakc);        
+        System.out.print(serverFeddbakc);        
     }
 
     

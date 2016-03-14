@@ -62,7 +62,7 @@ public class hadoopMaster {
     public void startCount(String inputFile) throws JSchException {
         String command = "hadoop jar /usr/local/hadoop/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.6.4.jar wordcount -D mapreduce.job.reduces=15 "+ inputFile + " /wordCount/output \n";
         String serverFeddbakc = sshHadoopMaster.sendCommandWcheck(session, command, this.maxJobTime);
-        System.out.print(serverFeddbakc);        
+        //System.out.print(serverFeddbakc);        
     }
 
 }
