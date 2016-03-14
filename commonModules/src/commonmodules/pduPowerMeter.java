@@ -217,7 +217,8 @@ public class pduPowerMeter {
     }
     
     public void logToFile() throws IOException{
-        String fileName=logLocation+System.currentTimeMillis()+"_"+logId+".csv";
+        //String fileName=logLocation+System.currentTimeMillis()+"_"+logId+".csv";
+        String fileName=logLocation+logId+".csv";
         FileWriter writer = new FileWriter(fileName);
         for (int i=0; i<noOfPorts;i++){
             writer.append(String.valueOf("Port:"+ports[i]));

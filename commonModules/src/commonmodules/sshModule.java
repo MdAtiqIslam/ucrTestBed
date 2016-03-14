@@ -156,7 +156,7 @@ public class sshModule {
                 Logger.getLogger(sshModule.class.getName()).log(Level.SEVERE, null, ex);
             }
             output.reset();
-
+            System.out.println(aString);
             String lines[] = aString.split("\\r?\\n");
 
             for (String line : lines) {
