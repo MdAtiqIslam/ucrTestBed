@@ -170,7 +170,7 @@ public class sshModule {
                     aString+="\n Job done detected";
                     break;
                 }
-                if (line.matches("(?i).*Finished Running engine.*")) {
+                if (line.matches("(?i).*Finished Running engine in.*")) {
                     jobDone = true;
                     aString += "\n Job done detected";
                     System.out.println(host+line);
