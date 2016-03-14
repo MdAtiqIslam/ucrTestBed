@@ -45,10 +45,11 @@ public class LoadGenParallelReq implements Runnable{
             URL nutch = new URL(searchURL);
             URLConnection yc = nutch.openConnection();
             BufferedReader in;
-
+            
             in = new BufferedReader(
                     new InputStreamReader(
                             yc.getInputStream()));
+            
 
             String inputLine;
 
@@ -63,9 +64,11 @@ public class LoadGenParallelReq implements Runnable{
             
             
         } catch (MalformedURLException ex) {
-            Logger.getLogger(LoadGenParallelReq.class.getName()).log(Level.SEVERE, null, ex);
+            //Logger.getLogger(LoadGenParallelReq.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Exception");
         } catch (IOException ex) {
-            Logger.getLogger(LoadGenParallelReq.class.getName()).log(Level.SEVERE, null, ex);
+            //Logger.getLogger(LoadGenParallelReq.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Exception");
         }
     }
 

@@ -50,13 +50,19 @@ public class hadoopMaster {
     public void deletFolder(String fileLoaction) throws JSchException {
         String command = "/usr/local/hadoop/bin/hadoop dfs -rm -r "+fileLoaction+" \n";
         String serverFeddbakc = sshHadoopMaster.sendCommand(session, command);
-        //System.out.print(serverFeddbakc);
+        System.out.print(serverFeddbakc);
     }
     
     public void startSort(String inputFile) throws JSchException{
         String command = "/usr/local/hadoop/bin/hadoop jar /usr/local/hadoop/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.6.2.jar terasort /teraSort/input/"+inputFile+" /teraSort/output/"+inputFile+ " \n";
         String serverFeddbakc = sshHadoopMaster.sendCommandWcheck(session, command, this.maxJobTime);
         //System.out.print(serverFeddbakc);        
+    }
+    
+    public void startCount(String inputFile) throws JSchException {
+        String command = "hadoop jar /usr/local/hadoop/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.6.4.jar wordcount -D mapreduce.job.reduces=15 "+ inputFile + " /wordCount/output \n";
+        String serverFeddbakc = sshHadoopMaster.sendCommandWcheck(session, command, this.maxJobTime);
+        System.out.print(serverFeddbakc);        
     }
 
 }

@@ -19,7 +19,7 @@ import java.util.logging.Logger;
  *
  * @author atiq
  */
-public class loadGen {
+public class expHadoop {
 
     private static final String xenUser = "root";
     private static final String hadoopUser = "hduser";
@@ -44,30 +44,33 @@ public class loadGen {
         connectAllServers(servers);
         checkServerFreq(servers);
         
-        hadoopMaster master = new  hadoopMaster(nodeIP[0],hadoopUser,password);
+        int maxTimeOut = slotDuration+120;
+        hadoopMaster master = new  hadoopMaster(nodeIP[0],hadoopUser,password,maxTimeOut);
         master.startSession(); 
         
         
-        int[] ports = {23,22};
+        int[] ports = {23,22};//{23,22};
         int[] activePorts = Arrays.copyOfRange(ports,0,noOfServer);
         String powerLogLocation = "C:\\local_files\\files\\output\\hadoop\\power\\";
         pduPowerMeter powerMeter = new pduPowerMeter(activePorts,slotDuration,logPowerToFile,powerLogLocation);
         System.out.println("Power loging started \n");
-        powerMeter.startLogging();
+        powerMeterLog(powerMeter);
         
-//        //int[] allFreq = {1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600, 2601};
-//        int[] allFreq = {1300, 1400, 1600, 1700, 1900, 2000, 2200, 2300, 2500, 2600};
+        int[] allFreq = {1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600, 2601};
+        //int[] allFreq = {1300, 1400, 1600, 1700, 1900, 2000, 2200, 2300, 2500, 2600};
+        changeServerFreq(servers, allFreq[0]);
+        checkServerFreq(servers);
+        Thread.sleep(60*1000);
+        
+        String fileName="/wordCount/input";
+        hadoopStart(master,fileName);
+        //serverFreqChange(allFreq,servers);
+        Thread.sleep(60*3*1000);
+        changeServerFreq(servers, allFreq[14]);
+        checkServerFreq(servers);
+   
 //        
-//        String fileName="3G";
-//        for (int i=0; i<allFreq.length;i++){
-//            changeServerFreq(servers, allFreq[i]);
-//            checkServerFreq(servers);
-//            
-//            hadoopSort(master,fileName);
-//            powerMeterLog(powerMeter);
-//            Thread.sleep((slotDuration+60)*1000);
-//        }     
-//        
+        Thread.sleep((slotDuration-3)*1000);
         master.disConnect();
         for (ServerXen server : servers) {
             server.ServerDisconnect();
@@ -91,7 +94,7 @@ public class loadGen {
             try {
                 server.setFreq(freq);
             } catch (JSchException ex) {
-                Logger.getLogger(loadGen.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(LoadGenHadoop.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
 
@@ -103,20 +106,20 @@ public class loadGen {
             try {
                 System.out.print(Arrays.toString(server.getFreqCurrent()) + "\n");
             } catch (JSchException ex) {
-                Logger.getLogger(loadGen.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(LoadGenHadoop.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
 
     }
     
     public static void powerMeterLog(pduPowerMeter powerMeter){
-                    Thread meterRead = new Thread(new Runnable() {
+                Thread meterRead = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     try {
                         powerMeter.startLogging(); //To change body of generated methods, choose Tools | Templates.
                     } catch (JSchException | InterruptedException | IOException ex) {
-                        Logger.getLogger(loadGen.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(LoadGenHadoop.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
             });
@@ -124,24 +127,44 @@ public class loadGen {
     }
 
     
-    public static void hadoopSort(hadoopMaster master, String fileName) {
-        Thread sort = new Thread(new Runnable() {
+    public static void hadoopStart(hadoopMaster master, String fileName) {
+        Thread jobHadoop = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    master.deletFolder("/teraSort/output/" + fileName);
-                    System.out.print("Sorting started at " + commonmodules.currentTime.getCurrentTime());
-                    long sortStrat = System.currentTimeMillis();
-                    master.startSort(fileName);
-                    long sortEnd = System.currentTimeMillis();
+                    //master.deletFolder("/teraSort/output/" + fileName);
+                    master.deletFolder("/wordCount/output");
+                    System.out.print("Count started at " + commonmodules.currentTime.getCurrentTime());
+                    long countStrat = System.currentTimeMillis();
+                    master.startCount(fileName);
+                    long countEnd = System.currentTimeMillis();
                     System.out.print(", Ends at " + commonmodules.currentTime.getCurrentTime());
-                    System.out.print(",Total time" + (sortEnd - sortStrat) / 1000 + "seconds"); //To change body of generated methods, choose Tools | Templates.
+                    System.out.print(",Total time" + (countEnd - countStrat) / 1000 + "seconds"); //To change body of generated methods, choose Tools | Templates.
                 } catch (JSchException ex) {
-                    Logger.getLogger(loadGen.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(LoadGenHadoop.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });
-        sort.start();
+        jobHadoop.start();
+    }
+    
+    
+    public static void serverFreqChange(int[] allFreq, ServerXen[] servers) {
+        Thread freqChange = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    for (int i = 0; i < allFreq.length; i += 2) {
+                        Thread.sleep(100 * 1000);
+                        changeServerFreq(servers, allFreq[i]);
+                        checkServerFreq(servers);
+                    }
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(LoadGenHadoop.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+        freqChange.start();
     }
 
     
