@@ -156,7 +156,7 @@ public class sshModule {
                 Logger.getLogger(sshModule.class.getName()).log(Level.SEVERE, null, ex);
             }
             output.reset();
-            System.out.println(aString);
+            //System.out.println(aString);
             String lines[] = aString.split("\\r?\\n");
 
             for (String line : lines) {
@@ -168,6 +168,12 @@ public class sshModule {
                 if (line.matches("(?i).*terasort.TeraSort: done.*")) {
                     jobDone = true;
                     aString+="\n Job done detected";
+                    break;
+                }
+                if (line.matches("(?i).*Finished Running engine.*")) {
+                    jobDone = true;
+                    aString += "\n Job done detected";
+                    System.out.println(host+line);
                     break;
                 }
             }
