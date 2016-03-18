@@ -50,7 +50,7 @@ public class hadoopMaster {
     public void deletFolder(String fileLoaction) throws JSchException {
         String command = "/usr/local/hadoop/bin/hadoop dfs -rm -r "+fileLoaction+" \n";
         String serverFeddbakc = sshHadoopMaster.sendCommand(session, command);
-        System.out.print(serverFeddbakc);
+        //System.out.print(serverFeddbakc);
     }
     
     public void startSort(String inputFile) throws JSchException{

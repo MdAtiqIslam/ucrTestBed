@@ -29,7 +29,7 @@ public class expGraph {
 
     private static final String[] nodeIP = {"192.168.137.160", "192.168.137.217"};
     private static final int noOfCore = 6;
-    private final static int slotDuration = 5 * 60;
+    private final static int slotDuration = 4 * 60;
     public static long logFolder;
     public static boolean logPowerToFile = true;
 
@@ -51,40 +51,41 @@ public class expGraph {
         pduPowerMeter powerMeter = new pduPowerMeter(activePorts, slotDuration, logPowerToFile, powerLogLocation);
 
         GraphAnalNode[] graphNodes = new GraphAnalNode[2];
-        graphNodes[0] = new GraphAnalNode(nodeIP[0], graphUser, password,slotDuration);
-        graphNodes[1] = new GraphAnalNode(nodeIP[1], graphUser, password,slotDuration);
+        graphNodes[0] = new GraphAnalNode(nodeIP[0], graphUser, password, slotDuration);
+        //graphNodes[1] = new GraphAnalNode(nodeIP[1], graphUser, password,slotDuration);
         graphNodes[0].startSession();
-        graphNodes[1].startSession();
+        //graphNodes[1].startSession();
         //int noOfUser=15000000;
         int noOfUser = 10000000;
-        
-        for (int rep=0; rep<2;rep++){
-        for (int i=0; i<allfreq.length;i++){
-        changeServerFreq(servers, allfreq[i]);
-        checkServerFreq(servers);
-        //System.out.println("Power loging started \n");
-        powerMeter.setLogId(i+rep*allfreq.length+100);
-        startPowerMeter(powerMeter);
-        Thread.sleep((0 + 10) * 1000);
-        startGraph(graphNodes, noOfUser);
 
-        Thread.sleep((slotDuration+20) * 1000);
+        for (int rep = 0; rep < 2; rep++) {
+            for (int i = 0; i < allfreq.length; i++) {
+                //System.out.println("Power loging started \n");
+                powerMeter.setLogId(i + rep * allfreq.length + 100);
+                startPowerMeter(powerMeter);
+                changeServerFreq(servers, allfreq[i]);
+                Thread.sleep((0 + 10) * 1000);
+                checkServerFreq(servers);
+                Thread.sleep((0 + 5) * 1000);
+                startGraph(graphNodes, noOfUser);
+
+                Thread.sleep((slotDuration + 20) * 1000);
+            }
         }
-        }
-        
+
         changeServerFreq(servers, allfreq[0]);
         checkServerFreq(servers);
         System.out.println("!!!!!!!!!!Experiment runs started!!!!!!!!!!!!!!!!!!!");
-        for (int i=0; i<20; i++){
+        for (int i = 0; i < 15; i++) {
             powerMeter.setLogId(i);
             startPowerMeter(powerMeter);
             Thread.sleep((0 + 10) * 1000);
             startGraph(graphNodes, noOfUser);
             Thread.sleep((slotDuration + 20) * 1000);
         }
-        
+
         graphNodes[0].disConnect();
-        graphNodes[1].disConnect();
+        //graphNodes[1].disConnect();
         // master.disConnect();
         for (ServerXen server : servers) {
             server.ServerDisconnect();
@@ -93,31 +94,31 @@ public class expGraph {
     }
 
     public static void startGraph(GraphAnalNode[] graphNodes, int noOfUser) {
-        
-        for (int i = 0; i < graphNodes.length; i++) {
-            GraphAnalNode currentNode = graphNodes[i];
-            int currentNodeID = i;
-            Thread nodeComm = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        System.out.println("Graph started at Node" + currentNodeID +" at "+ commonmodules.currentTime.getCurrentTime());
-                        long garphStrat = System.currentTimeMillis();
-                        currentNode.analSynth(noOfUser,noOfCore);//To change body of generated methods, choose Tools | Templates.
-                        long graphEnd = System.currentTimeMillis();
-                        System.out.println("Node" + currentNodeID + " ends at " + commonmodules.currentTime.getCurrentTime());
-                        System.out.println("Node" + currentNodeID + " total time" + (graphEnd - garphStrat) / 1000 + "seconds");
-                    } catch (JSchException ex) {
-                        Logger.getLogger(expGraph.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+
+        //for (int i = 0; i < graphNodes.length; i++) {
+        GraphAnalNode currentNode = graphNodes[0];
+        //int currentNodeID = i;
+        int currentNodeID = 0;
+        Thread nodeComm = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    System.out.println("Graph started at Node" + currentNodeID + " at " + commonmodules.currentTime.getCurrentTime());
+                    long garphStrat = System.currentTimeMillis();
+                    currentNode.analSynth(noOfUser, noOfCore * 2);//To change body of generated methods, choose Tools | Templates.
+                    long graphEnd = System.currentTimeMillis();
+                    System.out.println("Node" + currentNodeID + " ends at " + commonmodules.currentTime.getCurrentTime());
+                    System.out.println("Node" + currentNodeID + " total time" + (graphEnd - garphStrat) / 1000 + "seconds");
+                } catch (JSchException ex) {
+                    Logger.getLogger(expGraph.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            });
-            nodeComm.start();
-        }
+            }
+        });
+        nodeComm.start();
+        //}
     }
-    
-    
-    public static void startPowerMeter (pduPowerMeter powerMeter){
+
+    public static void startPowerMeter(pduPowerMeter powerMeter) {
         Thread meterRead = new Thread(new Runnable() {
             @Override
             public void run() {

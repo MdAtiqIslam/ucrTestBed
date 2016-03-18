@@ -54,23 +54,29 @@ public class expHadoop {
         String powerLogLocation = "C:\\local_files\\files\\output\\hadoop\\power\\";
         pduPowerMeter powerMeter = new pduPowerMeter(activePorts,slotDuration,logPowerToFile,powerLogLocation);
         System.out.println("Power loging started \n");
-        powerMeterLog(powerMeter);
+        
         
         int[] allFreq = {1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600, 2601};
         //int[] allFreq = {1300, 1400, 1600, 1700, 1900, 2000, 2200, 2300, 2500, 2600};
-        changeServerFreq(servers, allFreq[0]);
-        checkServerFreq(servers);
-        Thread.sleep(60*1000);
+//        changeServerFreq(servers, allFreq[0]);
+//        checkServerFreq(servers);
+//        Thread.sleep(60*1000);
         
         String fileName="/wordCount/input";
-        hadoopStart(master,fileName);
-        //serverFreqChange(allFreq,servers);
-        Thread.sleep(60*3*1000);
-//        changeServerFreq(servers, allFreq[14]);
-//        checkServerFreq(servers);
-   
+        
+        for (int i = 0; i < allFreq.length; i++) {
+            powerMeter.setLogId(i);
+            changeServerFreq(servers, allFreq[i]);
+            checkServerFreq(servers);
+            powerMeterLog(powerMeter);
+            Thread.sleep((60)*1000);
+            hadoopStart(master, fileName);
+            //serverFreqChange(allFreq,servers);
+            Thread.sleep((slotDuration)*1000);
+        }
+
 //        
-        Thread.sleep((slotDuration-3)*1000);
+
         master.disConnect();
         for (ServerXen server : servers) {
             server.ServerDisconnect();
@@ -88,7 +94,7 @@ public class expHadoop {
             server.ServerConnect();
         }
     }
-
+    
     public static void changeServerFreq(ServerXen[] servers, int freq) {
 
         for (ServerXen server : servers) {
@@ -109,11 +115,17 @@ public class expHadoop {
     public static void checkServerFreq(ServerXen[] servers) {
 
         for (ServerXen server : servers) {
-            try {
+            Thread getFreqParallel = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
                 System.out.print(Arrays.toString(server.getFreqCurrent()) + "\n");
             } catch (JSchException ex) {
-                Logger.getLogger(LoadGenHadoop.class.getName()).log(Level.SEVERE, null, ex);
-            }
+                        Logger.getLogger(expHadoop.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            });
+            getFreqParallel.start();
         }
 
     }
