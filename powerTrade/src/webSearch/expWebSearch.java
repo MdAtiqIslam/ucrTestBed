@@ -56,18 +56,21 @@ public class expWebSearch {
 //        }
 
 
-        int[] ports = {14,12,11};
+        int[] ports = {14,12,11};//{14,12,11}
         int[] activePorts = Arrays.copyOfRange(ports,0,noOfServer);
         String powerLogLocation = "C:\\local_files\\files\\output\\websearch\\power\\";
         pduPowerMeter powerMeter = new pduPowerMeter(activePorts,slotDuration+15,logPowerToFile,powerLogLocation);
         //powerMeter.startLogging();
 
         //int[] allFreq = {1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600};
-        int[] allFreq = {1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2001};
-        changeServerFreq(servers, allFreq[8]);
+        //int[] allFreq = {1200, 1200, 1800, 1200, 1300, 1200, 2000, 1300, 1200, 1200};
+        int[] allFreq = {1200, 1200, 1200, 1200, 1200, 1200, 1200, 1200, 1200, 1200};
+        for (int i=0; i<allFreq.length;i++){
+        changeServerFreq(servers, allFreq[i]);
         checkServerFreq(servers);
         //loadGenSerial(noOfServer, powerMeter,expNo+repeat*allFreq.length);
-        loadGenParallel(noOfServer, powerMeter, 0);
+        loadGenParallel(noOfServer, powerMeter, i);
+        }
 
         
         //loadGenParallel(noOfServer,powerMeter);
@@ -85,9 +88,10 @@ public class expWebSearch {
             
         //int[] NoOfReq = {100,500,1000,1500,2000,2500,3000,3500,4000};//, 3000, 3500, 4000};//, 3300, 3400, 3500};
         //int[] reqPerSec = {20, 40, 60, 80, 100, 120, 140, 160, 180, 200};
-        //int[] reqPerSec = {80,40,100,80,140,320,100,80,120,40,
-        //                  140,120,80,40,60,80,320,120,140,80};
-        int[] reqPerSec = {400};
+        int[] reqPerSecAll = {80,40,320,160,280,120,320,200,120,80};
+        int[] reqPerSec = new int[1];
+        reqPerSec[0]=reqPerSecAll[runID];
+        //int[] reqPerSec = {400};
         //int[] reqPerSec = {200,300,400,500};
         
         int[] noOfReq = new int[reqPerSec.length];
@@ -106,7 +110,7 @@ public class expWebSearch {
                     }
                 }
             });
-            powerMeter.setLogId(ii+1);
+            powerMeter.setLogId(runID);
             meterRead.start();
             Thread.sleep(10 * 1000);
             

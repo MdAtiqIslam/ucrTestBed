@@ -54,7 +54,7 @@ public class hadoopMaster {
     }
     
     public void startSort(String inputFile) throws JSchException{
-        String command = "/usr/local/hadoop/bin/hadoop jar /usr/local/hadoop/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.6.2.jar terasort /teraSort/input/"+inputFile+" /teraSort/output/"+inputFile+ " \n";
+        String command = "/usr/local/hadoop/bin/hadoop jar /usr/local/hadoop/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.6.4.jar terasort /teraSort/input/"+inputFile+" /teraSort/output/"+inputFile+ " \n";
         String serverFeddbakc = sshHadoopMaster.sendCommandWcheck(session, command, this.maxJobTime);
         //System.out.print(serverFeddbakc);        
     }
