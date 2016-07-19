@@ -33,7 +33,7 @@ public class expWebSearch {
 
     private static final String[] nutchIP = {"192.168.137.201","192.168.137.202","192.168.137.203"};
     private static final int noOfCore = 6; //for servers 6 to 10
-    private final static int slotDuration = 140;
+    private final static int slotDuration = 120;
     public static long logFolder;
     public static boolean logPowerToFile=true;
     
@@ -59,12 +59,26 @@ public class expWebSearch {
         int[] ports = {14,12,11};//{14,12,11}
         int[] activePorts = Arrays.copyOfRange(ports,0,noOfServer);
         String powerLogLocation = "C:\\local_files\\files\\output\\websearch\\power\\";
-        pduPowerMeter powerMeter = new pduPowerMeter(activePorts,slotDuration+15,logPowerToFile,powerLogLocation);
-        //powerMeter.startLogging();
+        pduPowerMeter powerMeter = new pduPowerMeter(activePorts,slotDuration*4,logPowerToFile,powerLogLocation);
+        int timeIndex = (int) System.currentTimeMillis(); 
+        
+        Thread meterRead = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    powerMeter.startLogging(); //To change body of generated methods, choose Tools | Templates.
+                } catch (JSchException | InterruptedException | IOException ex) {
+                    Logger.getLogger(webSearch.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+        powerMeter.setLogId(timeIndex);
+        meterRead.start();
+
 
         //int[] allFreq = {1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600};
         //int[] allFreq = {1200, 1200, 1800, 1200, 1300, 1200, 2000, 1300, 1200, 1200};
-        int[] allFreq = {1200, 1200, 1200, 1200, 1200, 1200, 1200, 1200, 1200, 1200};
+        int[] allFreq = {1200, 2001, 2001};
         for (int i=0; i<allFreq.length;i++){
         changeServerFreq(servers, allFreq[i]);
         checkServerFreq(servers);
@@ -72,7 +86,7 @@ public class expWebSearch {
         loadGenParallel(noOfServer, powerMeter, i);
         }
 
-        
+        Thread.sleep(2*60 * 1000);
         //loadGenParallel(noOfServer,powerMeter);
 
         //disconnect servers
@@ -88,11 +102,12 @@ public class expWebSearch {
             
         //int[] NoOfReq = {100,500,1000,1500,2000,2500,3000,3500,4000};//, 3000, 3500, 4000};//, 3300, 3400, 3500};
         //int[] reqPerSec = {20, 40, 60, 80, 100, 120, 140, 160, 180, 200};
-        int[] reqPerSecAll = {80,40,320,160,280,120,320,200,120,80};
-        int[] reqPerSec = new int[1];
-        reqPerSec[0]=reqPerSecAll[runID];
+        //int[] reqPerSecAll = {80,40,320,160,280,120,320,200,120,80};
+        //int[] reqPerSecAll = {300,300,300};
+        //int[] reqPerSec = new int[1];
+        //reqPerSec[0]=reqPerSecAll[runID];
         //int[] reqPerSec = {400};
-        //int[] reqPerSec = {200,300,400,500};
+        int[] reqPerSec = {300};
         
         int[] noOfReq = new int[reqPerSec.length];
         for (int i=0;i<reqPerSec.length;i++){
@@ -100,18 +115,18 @@ public class expWebSearch {
         }
         for (int ii = 0; ii < noOfReq.length; ii++) {
             
-            Thread meterRead = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        powerMeter.startLogging(); //To change body of generated methods, choose Tools | Templates.
-                    } catch (JSchException | InterruptedException | IOException ex) {
-                        Logger.getLogger(webSearch.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-            });
-            powerMeter.setLogId(runID);
-            meterRead.start();
+//            Thread meterRead = new Thread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    try {
+//                        powerMeter.startLogging(); //To change body of generated methods, choose Tools | Templates.
+//                    } catch (JSchException | InterruptedException | IOException ex) {
+//                        Logger.getLogger(webSearch.class.getName()).log(Level.SEVERE, null, ex);
+//                    }
+//                }
+//            });
+//            powerMeter.setLogId(runID);
+//            meterRead.start();
             Thread.sleep(10 * 1000);
             
             logFolder=System.currentTimeMillis();
@@ -120,10 +135,10 @@ public class expWebSearch {
             for (int j = 0; j < NoOfServers; j++) {     //NoOfServers       
                 test.add(new LoadGenParallelServer(j, nutchIP[j], slotDuration, noOfReq[ii]));
             }
-                Thread.sleep((slotDuration+30) * 1000);
+                Thread.sleep((slotDuration+5) * 1000);
 
             //summary of response from the server
-            responseSummarizer(0, NoOfServers, noOfReq[ii]);
+            //responseSummarizer(0, NoOfServers, noOfReq[ii]);
         }
     }
     
