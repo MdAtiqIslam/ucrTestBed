@@ -24,7 +24,7 @@ import java.util.logging.Logger;
 public class expWebSearch {
 
     private static final String user = "root";
-    private static final String password = "srenserver";
+    private static final String password = "";
 
     private static final String[] hosts = {"192.168.137.61",//server11
                                             "192.168.137.62",//server12
