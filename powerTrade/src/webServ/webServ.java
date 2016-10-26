@@ -24,7 +24,7 @@ import webSearch.webSearch;
 public class webServ {
 
     private static final String user = "root";
-    private static final String password = "srenserver";
+    private static final String password = "";
 
 //    private static final String[] hosts = {"169.235.14.136",//server4-FE
 //                                            "169.235.14.139"}; //server7-BE
