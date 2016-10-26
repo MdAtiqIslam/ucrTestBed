@@ -1,0 +1,5 @@
+This respitory cosntains the code developed to run benchmarks from CloudSuite and Hadoop. It has four benchmark control modules for Hadoop, Web Search, Web Service and Graph Analysis.
+
+The benchmark control modules are in the directory "powertrade".
+
+The common modules contains the java modules for controlling XenServer installed on the testbed machines, a metering module to log power reading from APC power strip that powers the testbed servers, a second power module to log power using WattsUp power meters thorugh serial port, and SSH module to send commands and recieve response from the servers and power devices.
