@@ -23,7 +23,7 @@ public class expHadoop {
 
     private static final String xenUser = "root";
     private static final String hadoopUser = "hduser";
-    private static final String password = "srenserver";
+    private static final String password = "";
     private static final String[] xenServerIPs = {"192.168.137.52", "192.168.137.53"};
 
     private static final String[] nodeIP = {"192.168.137.171", "192.168.137.172", "192.168.137.173", "192.168.137.174", "192.168.137.175", "192.168.137.176", "192.168.137.177", "192.168.137.178",
