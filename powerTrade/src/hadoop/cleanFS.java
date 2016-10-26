@@ -16,7 +16,7 @@ import commonmodules.sshModule;
 public class cleanFS {
 
     private static final String user = "hduser";
-    private static final String password = "srenserver";
+    private static final String password = "";
 //
     private static final String[] nodeIP = {"192.168.137.171", "192.168.137.172", "192.168.137.173", "192.168.137.174", "192.168.137.175", "192.168.137.176", "192.168.137.177", "192.168.137.178",
         "192.168.137.181", "192.168.137.182", "192.168.137.183", "192.168.137.184", "192.168.137.185", "192.168.137.186", "192.168.137.187", "192.168.137.188"};
