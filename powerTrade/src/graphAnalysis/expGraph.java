@@ -24,7 +24,7 @@ public class expGraph {
 
     private static final String xenUser = "root";
     private static final String graphUser = "testbed";
-    private static final String password = "srenserver";
+    private static final String password = " ";
     private static final String[] xenServerIPs = {"192.168.137.54", "192.168.137.55"};
 
     private static final String[] nodeIP = {"192.168.137.160", "192.168.137.217"};
